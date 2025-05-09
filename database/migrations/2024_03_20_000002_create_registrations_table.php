@@ -6,28 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Exécute les migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('event_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('status', ['en attente', 'confirmé', 'annulé'])->default('en attente');
-            $table->enum('payment_status', ['en attente', 'payé', 'remboursé'])->default('en attente');
-            $table->string('ticket_number')->unique();
-            $table->boolean('attended')->default(false);
+            $table->integer('ticket_quantity');
+            $table->decimal('total_price', 10, 2);
+            $table->string('status')->default('pending'); // pending, confirmed, cancelled
+            $table->string('ticket_code')->unique();
             $table->timestamps();
         });
     }
 
-    /**
-     * Annule les migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('registrations');
     }
-};
+}; 

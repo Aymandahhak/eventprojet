@@ -14,7 +14,7 @@ class EventController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth')->except(['index', 'show']);
+        $this->middleware('auth')->except(['index', 'show', 'search']);
     }
     
     /**
@@ -22,9 +22,9 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::where('status', 'published')
-            ->orderBy('date', 'asc')
-            ->get();
+        $events = Event::where('is_published', true)
+            ->orderBy('start_date')
+            ->paginate(12);
         
         return view('events.index', compact('events'));
     }
@@ -34,16 +34,7 @@ class EventController extends Controller
      */
     public function create()
     {
-        // Vérifie si l'utilisateur est un organisateur
-        if (!Auth::user()->isOrganizer()) {
-            return redirect()->route('events.index')
-                ->with('error', 'Vous n\'avez pas l\'autorisation de créer un événement.');
-        }
-        
-        $categories = ['Conférence', 'Séminaire', 'Formation', 'Atelier', 'Webinaire', 'Autre'];
-        $types = ['Présentiel', 'Virtuel', 'Hybride'];
-        
-        return view('events.create', compact('categories', 'types'));
+        return view('events.create');
     }
 
     /**
@@ -51,45 +42,29 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        // Vérifie si l'utilisateur est un organisateur
-        if (!Auth::user()->isOrganizer()) {
-            return redirect()->route('events.index')
-                ->with('error', 'Vous n\'avez pas l\'autorisation de créer un événement.');
-        }
-        
-        // Validation des données
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'date' => 'required|date|after:today',
-            'time' => 'required',
+            'category' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
             'location' => 'required|string|max:255',
-            'location_details' => 'nullable|string',
-            'category' => 'required|string|max:100',
-            'type' => 'required|string|max:50',
-            'max_participants' => 'nullable|integer|min:1',
-            'is_free' => 'boolean',
-            'price' => 'required_if:is_free,0|nullable|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|integer|min:1',
+            'image' => 'nullable|image|max:2048'
         ]);
-        
-        // Gestion de l'image
+
+        $validated['organizer_id'] = auth()->id();
+        $validated['is_published'] = false;
+
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('events', 'public');
-            $validated['image'] = 'storage/' . $imagePath;
-        } else {
-            $validated['image'] = 'asset/img/default-event.jpg';
+            $validated['image'] = $request->file('image')->store('events', 'public');
         }
-        
-        // Ajout des données supplémentaires
-        $validated['organizer_id'] = Auth::id();
-        $validated['status'] = 'published';
-        
-        // Création de l'événement
-        $event = Event::create($validated);
-        
-        return redirect()->route('events.show', $event)
-            ->with('success', 'Événement créé avec succès !');
+
+        Event::create($validated);
+
+        return redirect()->route('organizer.events')
+            ->with('success', 'Event created successfully');
     }
 
     /**
@@ -97,14 +72,7 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        // Récupération des événements similaires
-        $similarEvents = Event::where('category', $event->category)
-            ->where('id', '!=', $event->id)
-            ->where('status', 'published')
-            ->take(3)
-            ->get();
-            
-        return view('events.show', compact('event', 'similarEvents'));
+        return view('events.show', compact('event'));
     }
 
     /**
@@ -112,16 +80,8 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        // Vérifie si l'utilisateur est l'organisateur ou un admin
-        if (Auth::id() !== $event->organizer_id && !Auth::user()->isAdmin()) {
-            return redirect()->route('events.show', $event)
-                ->with('error', 'Vous n\'avez pas l\'autorisation de modifier cet événement.');
-        }
-        
-        $categories = ['Conférence', 'Séminaire', 'Formation', 'Atelier', 'Webinaire', 'Autre'];
-        $types = ['Présentiel', 'Virtuel', 'Hybride'];
-        
-        return view('events.edit', compact('event', 'categories', 'types'));
+        $this->authorize('update', $event);
+        return view('events.edit', compact('event'));
     }
 
     /**
@@ -129,45 +89,31 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        // Vérifie si l'utilisateur est l'organisateur ou un admin
-        if (Auth::id() !== $event->organizer_id && !Auth::user()->isAdmin()) {
-            return redirect()->route('events.show', $event)
-                ->with('error', 'Vous n\'avez pas l\'autorisation de modifier cet événement.');
-        }
-        
-        // Validation des données
+        $this->authorize('update', $event);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'date' => 'required|date',
-            'time' => 'required',
+            'category' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
             'location' => 'required|string|max:255',
-            'location_details' => 'nullable|string',
-            'category' => 'required|string|max:100',
-            'type' => 'required|string|max:50',
-            'max_participants' => 'nullable|integer|min:1',
-            'is_free' => 'boolean',
-            'price' => 'required_if:is_free,0|nullable|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required|in:draft,published,cancelled',
+            'price' => 'required|numeric|min:0',
+            'capacity' => 'required|integer|min:1',
+            'image' => 'nullable|image|max:2048'
         ]);
-        
-        // Gestion de l'image
+
         if ($request->hasFile('image')) {
-            // Supprime l'ancienne image si elle existe et n'est pas l'image par défaut
-            if ($event->image && $event->image !== 'asset/img/default-event.jpg' && Storage::exists(str_replace('storage/', 'public/', $event->image))) {
-                Storage::delete(str_replace('storage/', 'public/', $event->image));
+            if ($event->image) {
+                Storage::disk('public')->delete($event->image);
             }
-            
-            $imagePath = $request->file('image')->store('events', 'public');
-            $validated['image'] = 'storage/' . $imagePath;
+            $validated['image'] = $request->file('image')->store('events', 'public');
         }
-        
-        // Mise à jour de l'événement
+
         $event->update($validated);
-        
-        return redirect()->route('events.show', $event)
-            ->with('success', 'Événement mis à jour avec succès !');
+
+        return redirect()->route('organizer.events')
+            ->with('success', 'Event updated successfully');
     }
 
     /**
@@ -175,20 +121,64 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Vérifie si l'utilisateur est l'organisateur ou un admin
-        if (Auth::id() !== $event->organizer_id && !Auth::user()->isAdmin()) {
-            return redirect()->route('events.show', $event)
-                ->with('error', 'Vous n\'avez pas l\'autorisation de supprimer cet événement.');
+        $this->authorize('delete', $event);
+
+        if ($event->image) {
+            Storage::disk('public')->delete($event->image);
         }
-        
-        // Supprime l'image si elle existe et n'est pas l'image par défaut
-        if ($event->image && $event->image !== 'asset/img/default-event.jpg' && Storage::exists(str_replace('storage/', 'public/', $event->image))) {
-            Storage::delete(str_replace('storage/', 'public/', $event->image));
-        }
-        
+
         $event->delete();
+
+        return redirect()->route('organizer.events')
+            ->with('success', 'Event deleted successfully');
+    }
+
+    public function organizerEvents()
+    {
+        $events = auth()->user()->organizedEvents()
+            ->orderBy('start_date')
+            ->paginate(10);
+
+        return view('events.organizer-events', compact('events'));
+    }
+
+    public function participantEvents()
+    {
+        $events = auth()->user()->registeredEvents()
+            ->orderBy('start_date')
+            ->paginate(10);
+
+        return view('events.participant-events', compact('events'));
+    }
+
+    /**
+     * Search for events based on query parameters
+     */
+    public function search(Request $request)
+    {
+        $query = Event::query();
         
-        return redirect()->route('events.index')
-            ->with('success', 'Événement supprimé avec succès !');
+        // Search by keyword (name or description)
+        if ($request->has('keyword')) {
+            $keyword = $request->keyword;
+            $query->where(function($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%");
+            });
+        }
+        
+        // Filter by event type/category
+        if ($request->has('type') && $request->type != 'Select Event Type') {
+            $query->where('category', $request->type);
+        }
+        
+        // Filter by date
+        if ($request->has('date') && $request->date) {
+            $query->whereDate('date', $request->date);
+        }
+        
+        $events = $query->paginate(10);
+        
+        return view('events.search', compact('events', 'request'));
     }
 }

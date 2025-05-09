@@ -6,34 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Exécute les migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->date('date');
-            $table->time('time')->nullable();
-            $table->string('location');
             $table->string('category');
-            $table->enum('type', ['Présentiel', 'Virtuel', 'Hybride']);
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
+            $table->string('location');
+            $table->decimal('price', 10, 2);
+            $table->integer('capacity');
             $table->string('image')->nullable();
-            $table->integer('capacity')->default(0);
-            $table->decimal('price', 10, 2)->default(0.00);
-            $table->boolean('is_published')->default(false);
             $table->foreignId('organizer_id')->constrained('users')->onDelete('cascade');
+            $table->boolean('is_published')->default(false);
             $table->timestamps();
         });
     }
 
-    /**
-     * Annule les migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('events');
     }
-};
+}; 

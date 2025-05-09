@@ -25,10 +25,10 @@ class RegistrationController extends Controller
      */
     public function index()
     {
-        $registrations = Auth::user()->registrations()
+        $registrations = auth()->user()->registrations()
             ->with('event')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
             
         return view('registrations.index', compact('registrations'));
     }
@@ -62,54 +62,31 @@ class RegistrationController extends Controller
      */
     public function store(Request $request, Event $event)
     {
-        // Vérifie si l'événement est complet
-        if ($event->isFull()) {
-            return redirect()->route('events.show', $event)
-                ->with('error', 'Cet événement est complet, les inscriptions sont fermées.');
+        // Check if event is published
+        if (!$event->is_published) {
+            return back()->with('error', 'This event is not available for registration.');
         }
-        
-        // Vérifie si l'utilisateur est déjà inscrit
-        $existingRegistration = Registration::where('event_id', $event->id)
-            ->where('user_id', Auth::id())
-            ->first();
-            
-        if ($existingRegistration) {
-            return redirect()->route('events.show', $event)
-                ->with('error', 'Vous êtes déjà inscrit à cet événement.');
+
+        // Check if event is full
+        if ($event->registrations()->count() >= $event->capacity) {
+            return back()->with('error', 'Sorry, this event is full.');
         }
-        
-        // Préparation des données d'inscription
-        $registrationData = [
-            'event_id' => $event->id,
-            'user_id' => Auth::id(),
-            'status' => 'confirmed',
-            'ticket_number' => Registration::generateTicketNumber(),
-            'attended' => false
-        ];
-        
-        // Gestion du paiement
-        if (!$event->is_free) {
-            $registrationData['payment_status'] = 'en attente';
-            $registrationData['amount_paid'] = $event->price;
-            
-            // Si un paiement est nécessaire, on peut rediriger vers une page de paiement
-            // Pour l'instant, on simule que le paiement est effectué
-            $registrationData['payment_status'] = 'payé';
-            $registrationData['payment_method'] = 'carte bancaire';
-            $registrationData['payment_id'] = 'PAY-' . strtoupper(substr(uniqid(), -8));
-        } else {
-            $registrationData['payment_status'] = 'gratuit';
-            $registrationData['amount_paid'] = 0;
+
+        // Check if user is already registered
+        if ($event->registrations()->where('user_id', auth()->id())->exists()) {
+            return back()->with('error', 'You are already registered for this event.');
         }
-        
-        // Création de l'inscription
-        $registration = Registration::create($registrationData);
-        
-        // Envoi d'un email de confirmation (à implémenter)
-        // Mail::to(Auth::user()->email)->send(new RegistrationConfirmation($registration));
-        
-        return redirect()->route('registrations.show', $registration)
-            ->with('success', 'Votre inscription a été confirmée avec succès !');
+
+        // Create registration
+        $registration = $event->registrations()->create([
+            'user_id' => auth()->id(),
+            'status' => 'pending',
+            'payment_status' => 'pending'
+        ]);
+
+        // Redirect to payment page
+        return redirect()->route('payment.show', $registration)
+            ->with('success', 'Registration successful! Please complete your payment.');
     }
 
     /**
@@ -117,12 +94,7 @@ class RegistrationController extends Controller
      */
     public function show(Registration $registration)
     {
-        // Vérifie si l'utilisateur est bien le propriétaire de l'inscription
-        if (Auth::id() !== $registration->user_id && !Auth::user()->isAdmin()) {
-            return redirect()->route('registrations.index')
-                ->with('error', 'Vous n\'avez pas l\'autorisation de voir cette inscription.');
-        }
-        
+        $this->authorize('view', $registration);
         return view('registrations.show', compact('registration'));
     }
 
@@ -131,17 +103,17 @@ class RegistrationController extends Controller
      */
     public function cancel(Registration $registration)
     {
-        // Vérifie si l'utilisateur est bien le propriétaire de l'inscription
-        if (Auth::id() !== $registration->user_id && !Auth::user()->isAdmin()) {
-            return redirect()->route('registrations.index')
-                ->with('error', 'Vous n\'avez pas l\'autorisation d\'annuler cette inscription.');
+        $this->authorize('update', $registration);
+
+        if ($registration->status === 'cancelled') {
+            return back()->with('error', 'This registration is already cancelled.');
         }
-        
-        $registration->status = 'annulée';
-        $registration->save();
-        
-        return redirect()->route('registrations.index')
-            ->with('success', 'Votre inscription a été annulée avec succès.');
+
+        $registration->update([
+            'status' => 'cancelled'
+        ]);
+
+        return back()->with('success', 'Registration cancelled successfully.');
     }
 
     /**
@@ -161,5 +133,30 @@ class RegistrationController extends Controller
         // Pour l'instant, redirige vers la page de l'inscription
         return redirect()->route('registrations.show', $registration)
             ->with('info', 'La fonctionnalité de téléchargement de billet sera disponible prochainement.');
+    }
+
+    public function organizerRegistrations(Event $event)
+    {
+        $this->authorize('view', $event);
+
+        $registrations = $event->registrations()
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('registrations.organizer-registrations', compact('event', 'registrations'));
+    }
+
+    public function updateStatus(Request $request, Registration $registration)
+    {
+        $this->authorize('update', $registration);
+
+        $validated = $request->validate([
+            'status' => 'required|in:confirmed,cancelled'
+        ]);
+
+        $registration->update($validated);
+
+        return back()->with('success', 'Registration status updated successfully.');
     }
 } 

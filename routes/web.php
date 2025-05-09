@@ -4,11 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\PaymentController;
+use Illuminate\Support\Facades\Auth;
 
 // Public routes
 Route::get('/', function () {
     return view('index');
-})->name('home');
+});
 
 Route::get('/about', function () {
     return view('about');
@@ -54,193 +58,66 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-// Event routes - no authentication required for now
-Route::prefix('events')->group(function () {
-    Route::get('/', [EventController::class, 'index'])->name('events.index');
-    Route::get('/{event}', [EventController::class, 'show'])->name('events.show');
-    
-    // Routes for creating and managing events
-    Route::get('/create/new', [EventController::class, 'create'])->name('events.create');
-    Route::post('/', [EventController::class, 'store'])->name('events.store');
-    Route::get('/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
-    Route::put('/{event}', [EventController::class, 'update'])->name('events.update');
-    Route::delete('/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-    
-    // Additional event actions
-    Route::put('/{event}/publish', [EventController::class, 'publish'])->name('events.publish');
-    Route::put('/{event}/unpublish', [EventController::class, 'unpublish'])->name('events.unpublish');
-    Route::get('/{event}/duplicate', [EventController::class, 'duplicate'])->name('events.duplicate');
+// Event search route
+Route::get('/events/search', [App\Http\Controllers\EventController::class, 'search'])->name('events.search');
+
+// Authentication routes
+Auth::routes();
+
+// Protected routes
+Route::middleware(['auth'])->group(function () {
+    // Dashboard routes
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+    Route::put('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
+
+    // Event routes
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::middleware(['can:manage-events'])->group(function () {
+        Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+        Route::post('/events', [EventController::class, 'store'])->name('events.store');
+        Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+        Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    });
+
+    // Registration routes
+    Route::post('/events/{event}/register', [RegistrationController::class, 'store'])->name('registrations.store');
+    Route::get('/registrations', [RegistrationController::class, 'index'])->name('registrations.index');
+    Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])->name('registrations.show');
+    Route::put('/registrations/{registration}/cancel', [RegistrationController::class, 'cancel'])->name('registrations.cancel');
+
+    // Payment routes
+    Route::get('/payments/{registration}', [PaymentController::class, 'show'])->name('payment.show');
+    Route::post('/payments/{registration}/process', [PaymentController::class, 'process'])->name('payment.process');
+    Route::get('/payments/{registration}/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payments/{registration}/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+
+    // Role-specific routes
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+        Route::get('/users', [DashboardController::class, 'users'])->name('users');
+        Route::get('/events', [DashboardController::class, 'events'])->name('events');
+        Route::get('/statistics', [DashboardController::class, 'statistics'])->name('statistics');
+        Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
+    });
+
+    Route::middleware(['role:organizer'])->prefix('organizer')->name('organizer.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'organizer'])->name('dashboard');
+        Route::get('/events', [EventController::class, 'organizerEvents'])->name('events');
+        Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
+        Route::get('/registrations/{event}', [RegistrationController::class, 'organizerRegistrations'])->name('registrations');
+    });
+
+    Route::middleware(['role:participant'])->prefix('participant')->name('participant.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'participant'])->name('dashboard');
+        Route::get('/events', [EventController::class, 'participantEvents'])->name('events');
+        Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets');
+        Route::get('/tickets/{registration}/download', [App\Http\Controllers\TicketController::class, 'download'])->name('tickets.download');
+    });
 });
 
-// Registration routes - no authentication required for now
-Route::prefix('registrations')->group(function () {
-    Route::get('/', [RegistrationController::class, 'index'])->name('registrations.index');
-    Route::get('/create/{event}', [RegistrationController::class, 'create'])->name('registrations.create');
-    Route::post('/{event}', [RegistrationController::class, 'store'])->name('registrations.store');
-    Route::get('/{registration}', [RegistrationController::class, 'show'])->name('registrations.show');
-    Route::post('/{registration}/cancel', [RegistrationController::class, 'cancel'])->name('registrations.cancel');
-    Route::get('/{registration}/ticket', [RegistrationController::class, 'downloadTicket'])->name('registrations.ticket');
-});
+Auth::routes();
 
-// Participant routes
-Route::prefix('participant')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', function () {
-        // Mock data for now
-        $stats = [
-            'totalRegistrations' => 12,
-            'upcomingEvents' => 5,
-            'totalTickets' => 8,
-            'totalCertificates' => 3,
-            'daysToNextEvent' => 7
-        ];
-        
-        return view('dashboard.participant', [
-            'stats' => $stats
-        ]);
-    })->name('participant.dashboard');
-    
-    // Registrations & Events
-    Route::get('/registrations', function () {
-        return view('events.participant-registrations');
-    })->name('participant.registrations');
-    
-    // Tickets
-    Route::get('/tickets', function () {
-        return view('events.participant-tickets');
-    })->name('participant.tickets');
-    
-    // Certificates
-    Route::get('/certificates', function () {
-        return view('events.participant-certificates');
-    })->name('participant.certificates');
-    
-    // Download ticket
-    Route::get('/tickets/{registration}/download', function ($registration) {
-        // Implementation will be added later
-        return back()->with('info', 'Ticket download feature will be implemented soon');
-    })->name('participant.tickets.download');
-    
-    // Profile
-    Route::get('/profile', function () {
-        return view('dashboard.profile', ['userType' => 'participant']);
-    })->name('participant.profile');
-});
-
-// Organizer routes
-Route::prefix('organizer')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', function () {
-        // Mock data for now
-        $stats = [
-            'totalEvents' => 8,
-            'totalParticipants' => 120,
-            'upcomingEvents' => 3,
-            'totalRevenue' => 15000,
-            'newEventsPercent' => 25,
-            'newParticipantsPercent' => 15,
-            'revenueGrowthPercent' => 32,
-            'daysToNextEvent' => 5
-        ];
-        
-        return view('dashboard.organizer', [
-            'stats' => $stats
-        ]);
-    })->name('organizer.dashboard');
-    
-    // Events Management
-    Route::get('/events', function () {
-        // Mock data for now
-        $events = collect([]);
-        
-        return view('events.manage', [
-            'events' => $events
-        ]);
-    })->name('organizer.events');
-    
-    // Event Registrations
-    Route::get('/events/{event}/registrations', function ($event) {
-        return view('events.registrations', [
-            'event' => \App\Models\Event::find($event)
-        ]);
-    })->name('organizer.events.registrations');
-    
-    // Event Statistics
-    Route::get('/events/{event}/statistics', function ($event) {
-        return view('events.statistics', [
-            'event' => \App\Models\Event::find($event)
-        ]);
-    })->name('organizer.events.statistics');
-    
-    // All Registrations
-    Route::get('/registrations', function () {
-        return view('events.all-registrations');
-    })->name('organizer.registrations');
-    
-    // Statistics
-    Route::get('/statistics', function () {
-        return view('dashboard.statistics', [
-            'userType' => 'organizer'
-        ]);
-    })->name('organizer.statistics');
-    
-    // Profile
-    Route::get('/profile', function () {
-        return view('dashboard.profile', ['userType' => 'organizer']);
-    })->name('organizer.profile');
-});
-
-// Admin routes
-Route::prefix('admin')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', function () {
-        // Mock data for now
-        $stats = [
-            'totalUsers' => 250,
-            'activeEvents' => 45,
-            'totalRegistrations' => 680,
-            'totalRevenue' => 45000,
-            'newUsersPercent' => 12,
-            'newEventsPercent' => 8,
-            'newRegistrationsPercent' => 15,
-            'revenueGrowthPercent' => 22
-        ];
-        
-        return view('dashboard.admin', [
-            'stats' => $stats
-        ]);
-    })->name('admin.dashboard');
-    
-    // Users Management
-    Route::get('/users', function () {
-        return view('admin.users');
-    })->name('admin.users');
-    
-    // Events Management
-    Route::get('/events', function () {
-        return view('admin.events');
-    })->name('admin.events');
-    
-    // Registrations Management
-    Route::get('/registrations', function () {
-        return view('admin.registrations');
-    })->name('admin.registrations');
-    
-    // Statistics
-    Route::get('/statistics', function () {
-        return view('dashboard.statistics', [
-            'userType' => 'admin'
-        ]);
-    })->name('admin.statistics');
-    
-    // Settings
-    Route::get('/settings', function () {
-        return view('admin.settings');
-    })->name('admin.settings');
-});
-
-// Generic dashboard route that redirects to the specific dashboard based on role
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-// Auth routes
-require __DIR__.'/auth.php';
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

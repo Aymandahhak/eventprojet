@@ -25,8 +25,7 @@ class User extends Authenticatable
         'role',
         'phone',
         'address',
-        'bio',
-        'profile_image'
+        'avatar'
     ];
 
     /**
@@ -70,8 +69,8 @@ class User extends Authenticatable
      */
     public function registeredEvents()
     {
-        return $this->belongsToMany(Event::class, 'registrations', 'user_id', 'event_id')
-            ->withPivot('status', 'payment_status', 'ticket_number', 'attended')
+        return $this->belongsToMany(Event::class, 'registrations')
+            ->withPivot(['status', 'payment_status'])
             ->withTimestamps();
     }
 
@@ -88,6 +87,19 @@ class User extends Authenticatable
      */
     public function isOrganizer()
     {
-        return $this->role === 'organizer' || $this->role === 'admin';
+        return $this->role === 'organizer';
+    }
+
+    /**
+     * Check if user is a participant.
+     */
+    public function isParticipant()
+    {
+        return $this->role === 'participant';
+    }
+
+    public function getFormattedRoleAttribute()
+    {
+        return ucfirst($this->role);
     }
 }

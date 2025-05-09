@@ -17,18 +17,16 @@ class Event extends Model
     protected $fillable = [
         'title',
         'description',
-        'date',
-        'time',
-        'location',
-        'location_details',
         'category',
-        'type',
-        'max_participants',
-        'is_free',
+        'start_date',
+        'end_date',
+        'location',
         'price',
+        'capacity',
         'image',
-        'status',
-        'organizer_id'
+        'organizer_id',
+        'is_published',
+        'type'
     ];
 
     /**
@@ -37,10 +35,10 @@ class Event extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'date' => 'date',
-        'is_free' => 'boolean',
-        'max_participants' => 'integer',
-        'price' => 'decimal:2'
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'price' => 'decimal:2',
+        'is_published' => 'boolean'
     ];
 
     /**
@@ -60,15 +58,33 @@ class Event extends Model
     }
 
     /**
-     * Vérifier si l'événement est complet.
+     * Obtenir les participants pour cet événement.
      */
-    public function isFull()
+    public function participants()
     {
-        if (!$this->max_participants) {
-            return false;
-        }
-        
-        return $this->registrations()->count() >= $this->max_participants;
+        return $this->belongsToMany(User::class, 'registrations')
+            ->withPivot(['status', 'payment_status'])
+            ->withTimestamps();
+    }
+
+    public function getRemainingCapacityAttribute()
+    {
+        return $this->capacity - $this->registrations()->where('status', 'confirmed')->count();
+    }
+
+    public function getIsFullAttribute()
+    {
+        return $this->remaining_capacity <= 0;
+    }
+
+    public function getFormattedPriceAttribute()
+    {
+        return '$' . number_format($this->price, 2);
+    }
+
+    public function getDurationAttribute()
+    {
+        return $this->start_date->diffForHumans($this->end_date, true);
     }
 
     /**
@@ -76,7 +92,7 @@ class Event extends Model
      */
     public function scopeUpcoming($query)
     {
-        return $query->where('date', '>=', now())->orderBy('date', 'asc');
+        return $query->where('start_date', '>', now());
     }
 
     /**
@@ -84,7 +100,7 @@ class Event extends Model
      */
     public function scopePast($query)
     {
-        return $query->where('date', '<', now())->orderBy('date', 'desc');
+        return $query->where('end_date', '<', now());
     }
 
     /**
@@ -96,14 +112,16 @@ class Event extends Model
     }
 
     /**
-     * Get formatted price.
+     * Obtenir les événements en cours.
      */
-    public function formattedPrice()
+    public function scopeCurrent($query)
     {
-        if ($this->is_free) {
-            return 'Gratuit';
-        }
-        
-        return number_format($this->price, 2) . ' €';
+        return $query->where('start_date', '<=', now())
+            ->where('end_date', '>=', now());
+    }
+
+    public function getTypeAttribute($value)
+    {
+        return $value ?? 'Présentiel'; // Default to 'Présentiel' if not set
     }
 }

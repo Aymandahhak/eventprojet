@@ -19,11 +19,7 @@ class Registration extends Model
         'user_id',
         'status',
         'payment_status',
-        'ticket_number',
-        'amount_paid',
-        'payment_method',
-        'payment_id',
-        'attended'
+        'payment_id'
     ];
 
     /**
@@ -32,8 +28,8 @@ class Registration extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'attended' => 'boolean',
-        'amount_paid' => 'decimal:2'
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     /**
@@ -65,7 +61,7 @@ class Registration extends Model
      */
     public function scopeConfirmed($query)
     {
-        return $query->where('status', 'confirmé');
+        return $query->where('status', 'confirmed');
     }
 
     /**
@@ -73,7 +69,7 @@ class Registration extends Model
      */
     public function scopePending($query)
     {
-        return $query->where('status', 'en attente');
+        return $query->where('status', 'pending');
     }
 
     /**
@@ -81,7 +77,23 @@ class Registration extends Model
      */
     public function scopePaid($query)
     {
-        return $query->where('payment_status', 'payé');
+        return $query->where('payment_status', 'paid');
+    }
+
+    /**
+     * Obtenir les inscriptions annulées.
+     */
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled');
+    }
+
+    /**
+     * Obtenir les inscriptions non payées.
+     */
+    public function scopeUnpaid($query)
+    {
+        return $query->where('payment_status', 'pending');
     }
 
     /**
@@ -93,5 +105,35 @@ class Registration extends Model
         $this->save();
         
         return $this;
+    }
+
+    public function getIsConfirmedAttribute()
+    {
+        return $this->status === 'confirmed';
+    }
+
+    public function getIsCancelledAttribute()
+    {
+        return $this->status === 'cancelled';
+    }
+
+    public function getIsPendingAttribute()
+    {
+        return $this->status === 'pending';
+    }
+
+    public function getIsPaidAttribute()
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function getFormattedStatusAttribute()
+    {
+        return ucfirst($this->status);
+    }
+
+    public function getFormattedPaymentStatusAttribute()
+    {
+        return ucfirst($this->payment_status);
     }
 }

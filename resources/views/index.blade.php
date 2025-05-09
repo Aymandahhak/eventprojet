@@ -56,61 +56,39 @@
                         <a href="#contact" class="nav-item nav-link">Contact</a>
                     </div>
                     <div class="d-flex align-items-center">
-                        <!-- Search Bar -->
-                        <div class="search-container me-3">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Search events by name, category, or date">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search"></i>
+                        <!-- Auth Links -->
+                        @auth
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i> {{ Auth::user()->name }}
                                 </button>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    @if(Auth::user()->isAdmin())
+                                        <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('admin.users') }}"><i class="fas fa-users me-2"></i>Users</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('admin.events') }}"><i class="fas fa-calendar-alt me-2"></i>Events</a></li>
+                                    @elseif(Auth::user()->isOrganizer())
+                                        <li><a class="dropdown-item" href="{{ route('organizer.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('organizer.events') }}"><i class="fas fa-calendar-alt me-2"></i>My Events</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('events.create') }}"><i class="fas fa-plus me-2"></i>Create Event</a></li>
+                                    @else
+                                        <li><a class="dropdown-item" href="{{ route('participant.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('participant.events') }}"><i class="fas fa-calendar-alt me-2"></i>My Events</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('participant.tickets') }}"><i class="fas fa-ticket-alt me-2"></i>My Tickets</a></li>
+                                    @endif
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="dropdown mt-1">
-                                <select class="form-select form-select-sm">
-                                    <option selected>All Categories</option>
-                                    <option>Conference</option>
-                                    <option>Workshop</option>
-                                    <option>Seminar</option>
-                                </select>
-                            </div>
-                        </div>
-                        <!-- Profile Dropdowns -->
-                        <div class="dropdown me-2">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-shield"></i> Admin
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.users') }}"><i class="fas fa-users me-2"></i>Users</a></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.events') }}"><i class="fas fa-calendar-alt me-2"></i>Events</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.profile') }}"><i class="fas fa-user-cog me-2"></i>Profile</a></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown me-2">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="organizerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-tie"></i> Organizer
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="organizerDropdown">
-                                <li><a class="dropdown-item" href="{{ route('organizer.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ route('organizer.events') }}"><i class="fas fa-calendar-alt me-2"></i>My Events</a></li>
-                                <li><a class="dropdown-item" href="{{ route('events.create') }}"><i class="fas fa-plus me-2"></i>Create Event</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('organizer.profile') }}"><i class="fas fa-user-cog me-2"></i>Profile</a></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="participantDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i> Participant
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="participantDropdown">
-                                <li><a class="dropdown-item" href="{{ route('participant.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                                <li><a class="dropdown-item" href="{{ route('participant.events') }}"><i class="fas fa-calendar-alt me-2"></i>My Events</a></li>
-                                <li><a class="dropdown-item" href="{{ route('participant.tickets') }}"><i class="fas fa-ticket-alt me-2"></i>My Tickets</a></li>
-                        <!-- Authentication Links -->
-                        <div class="auth-links">
-                            <a href="#" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
-                            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a>
-                        </div>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">Login</a>
+                            <a href="{{ route('register') }}" class="btn btn-primary">Register</a>
+                        @endauth
                     </div>
                 </div>
             </nav>
@@ -136,41 +114,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-5 fadeInRight animated" data-animation="fadeInRight" data-delay="1s" style="animation-delay: 1s;">
-                                <div class="ticket-form p-5">
-                                    <h2 class="text-dark text-uppercase mb-4">Register for Event</h2>
-                                    <form>
-                                        <div class="row g-4">
-                                            <div class="col-12">
-                                                <input type="text" class="form-control border-0 py-2" id="name" placeholder="Your Name">
-                                            </div>
-                                            <div class="col-12 col-xl-6">
-                                                <input type="email" class="form-control border-0 py-2" id="email" placeholder="Your Email">
-                                            </div>
-                                            <div class="col-12 col-xl-6">
-                                                <input type="phone" class="form-control border-0 py-2" id="phone" placeholder="Phone">
-                                            </div>
-                                            <div class="col-12">
-                                                <select class="form-select border-0 py-2" aria-label="Default select example">
-                                                    <option selected>Select Event Type</option>
-                                                    <option value="1">Conference</option>
-                                                    <option value="2">Workshop</option>
-                                                    <option value="3">Seminar</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-12">
-                                                <input class="form-control border-0 py-2" type="date">
-                                            </div>
-                                            <div class="col-12">
-                                                <input type="number" class="form-control border-0 py-2" id="number" placeholder="Number of Tickets">
-                                            </div>
-                                            <div class="col-12">
-                                                <button type="button" class="btn btn-primary w-100 py-2 px-5">Register Now</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div> 
                         </div>
                     </div>
                 </div>
@@ -191,41 +134,45 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xl-5 fadeInRight animated" data-animation="fadeInRight" data-delay="1s" style="animation-delay: 1s;">
-                                <div class="ticket-form p-5">
-                                    <h2 class="text-dark text-uppercase mb-4">Register for Event</h2>
-                                    <form>
-                                        <div class="row g-4">
-                                            <div class="col-12">
-                                                <input type="text" class="form-control border-0 py-2" id="name" placeholder="Your Name">
-                                            </div>
-                                            <div class="col-12 col-xl-6">
-                                                <input type="email" class="form-control border-0 py-2" id="email" placeholder="Your Email">
-                                            </div>
-                                            <div class="col-12 col-xl-6">
-                                                <input type="phone" class="form-control border-0 py-2" id="phone" placeholder="Phone">
-                                            </div>
-                                            <div class="col-12">
-                                                <select class="form-select border-0 py-2" aria-label="Default select example">
-                                                    <option selected>Select Event Type</option>
-                                                    <option value="1">Conference</option>
-                                                    <option value="2">Workshop</option>
-                                                    <option value="3">Seminar</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-12">
-                                                <input class="form-control border-0 py-2" type="date">
-                                            </div>
-                                            <div class="col-12">
-                                                <input type="number" class="form-control border-0 py-2" id="number" placeholder="Number of Tickets">
-                                            </div>
-                                            <div class="col-12">
-                                                <button type="button" class="btn btn-primary w-100 py-2 px-5">Register Now</button>
-                                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Search Form Overlay -->
+        <div class="fixed-search-form">
+            <div class="container">
+                <div class="row justify-content-end">
+                    <div class="col-xl-5">
+                        <div class="ticket-form p-5">
+                            <h2 class="text-dark text-uppercase mb-4">Search Events</h2>
+                            <form action="{{ route('events.search') }}" method="GET">
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="search-container">
+                                            <input type="text" name="keyword" class="form-control border-0 py-2" placeholder="Search events by name, category, or date">
                                         </div>
-                                    </form>
+                                    </div>
+                                    <div class="col-12">
+                                        <select name="type" class="form-select border-0 py-2" aria-label="Default select example">
+                                            <option selected>Select Event Type</option>
+                                            <option value="Conference">Conference</option>
+                                            <option value="Workshop">Workshop</option>
+                                            <option value="Seminar">Seminar</option>
+                                            <option value="Networking">Networking</option>
+                                            <option value="Training">Training</option>
+                                            <option value="Exhibition">Exhibition</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <input name="date" class="form-control border-0 py-2" type="date" placeholder="Select Date">
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary w-100 py-2 px-5">Search Now</button>
+                                    </div>
                                 </div>
-                            </div>  
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -233,36 +180,334 @@
         </div>
         <!-- Carousel End -->
 
-        <!-- Categories Filter Start -->
+        <!-- Categories Filter End -->
+
+        <!-- Category Events Start -->
         <div class="container-fluid py-5">
-            <div class="container">
+            <div class="container py-5">
                 <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
                     <h4 class="text-primary">Event Categories</h4>
                     <h1 class="display-5 mb-4">Browse Events by Category</h1>
                 </div>
-                <div class="row g-4 justify-content-center">
+                
+                <!-- Category Filter Buttons -->
+                <div class="row g-4 justify-content-center mb-5">
                     <div class="col-lg-2 col-md-4 col-6">
-                        <a href="#" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Conference</a>
+                        <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Conference</a>
                     </div>
                     <div class="col-lg-2 col-md-4 col-6">
-                        <a href="#" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Workshop</a>
+                        <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Workshop</a>
                     </div>
                     <div class="col-lg-2 col-md-4 col-6">
-                        <a href="#" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Seminar</a>
+                        <a href="{{ route('events.search', ['type' => 'Seminar']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Seminar</a>
                     </div>
                     <div class="col-lg-2 col-md-4 col-6">
-                        <a href="#" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Networking</a>
+                        <a href="{{ route('events.search', ['type' => 'Networking']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Networking</a>
                     </div>
                     <div class="col-lg-2 col-md-4 col-6">
-                        <a href="#" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Training</a>
+                        <a href="{{ route('events.search', ['type' => 'Training']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Training</a>
                     </div>
                     <div class="col-lg-2 col-md-4 col-6">
-                        <a href="#" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Exhibition</a>
+                        <a href="{{ route('events.search', ['type' => 'Exhibition']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Exhibition</a>
                     </div>
+                </div>
+                
+                <!-- Conference Events -->
+                <div class="row mb-5">
+                    <div class="col-12 mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="text-primary"><i class="fas fa-chalkboard-teacher me-2"></i> Conferences</h3>
+                            <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="btn btn-outline-primary rounded-pill">View All <i class="fas fa-arrow-right ms-2"></i></a>
+                        </div>
+                    </div>
+                    
+                    @php
+                        $conferenceEvents = App\Models\Event::where('category', 'Conference')
+                            ->where('is_published', true)
+                            ->orderBy('start_date', 'asc')
+                            ->take(3)
+                            ->get();
+                    @endphp
+                    
+                    @foreach($conferenceEvents as $event)
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card h-100 event-card border-0 shadow-sm">
+                            <div class="position-relative overflow-hidden">
+                                @if($event->image)
+                                    <img class="card-img-top" src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
+                                @else
+                                    <img class="card-img-top" src="{{ asset('asset/img/carousel-1.jpg') }}" alt="Default Event Image">
+                                @endif
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <div class="badge bg-primary rounded-pill px-3 py-2">{{ $event->category }}</div>
+                                </div>
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <div class="badge bg-dark rounded-pill px-3 py-2">
+                                        {{ $event->type }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-3 text-truncate fw-bold">{{ $event->title }}</h5>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="far fa-calendar-alt text-primary me-2"></i>
+                                    <small>{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }}</small>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="far fa-clock text-primary me-2"></i>
+                                    <small>{{ \Carbon\Carbon::parse($event->start_date)->format('h:i A') }}</small>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <small class="text-truncate">{{ $event->location }}</small>
+                                </div>
+                                
+                                <div class="mb-3 border-top pt-3">
+                                    <p class="card-text mb-3" style="min-height: 60px;">
+                                        {{ \Illuminate\Support\Str::limit($event->description, 100) }}
+                                    </p>
+                                    
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div>
+                                            <i class="fas fa-users text-primary me-1"></i>
+                                            <small>{{ $event->registrations->count() }}/{{ $event->capacity }} participants</small>
+                                        </div>
+                                        <div>
+                                            <small class="text-primary fw-bold">${{ number_format($event->price, 2) }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('events.show', $event) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-info-circle me-2"></i>View Details
+                                    </a>
+                                    @auth
+                                        @if(!$event->registrations()->where('user_id', auth()->id())->exists())
+                                            <form action="{{ route('registrations.store', $event) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-ticket-alt me-2"></i>Book Now
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-success w-100" disabled>
+                                                <i class="fas fa-check-circle me-2"></i>Already Booked
+                                            </button>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn btn-primary">
+                                            <i class="fas fa-ticket-alt me-2"></i>Book Now
+                                        </a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                
+                <!-- Workshop Events -->
+                <div class="row mb-5">
+                    <div class="col-12 mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="text-primary"><i class="fas fa-laptop-code me-2"></i> Workshops</h3>
+                            <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="btn btn-outline-primary rounded-pill">View All <i class="fas fa-arrow-right ms-2"></i></a>
+                        </div>
+                    </div>
+                    
+                    @php
+                        $workshopEvents = App\Models\Event::where('category', 'Workshop')
+                            ->where('is_published', true)
+                            ->orderBy('start_date', 'asc')
+                            ->take(3)
+                            ->get();
+                    @endphp
+                    
+                    @foreach($workshopEvents as $event)
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card h-100 event-card border-0 shadow-sm">
+                            <div class="position-relative overflow-hidden">
+                                @if($event->image)
+                                    <img class="card-img-top" src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
+                                @else
+                                    <img class="card-img-top" src="{{ asset('asset/img/carousel-1.jpg') }}" alt="Default Event Image">
+                                @endif
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <div class="badge bg-primary rounded-pill px-3 py-2">{{ $event->category }}</div>
+                                </div>
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <div class="badge bg-dark rounded-pill px-3 py-2">
+                                        {{ $event->type }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-3 text-truncate fw-bold">{{ $event->title }}</h5>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="far fa-calendar-alt text-primary me-2"></i>
+                                    <small>{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }}</small>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="far fa-clock text-primary me-2"></i>
+                                    <small>{{ \Carbon\Carbon::parse($event->start_date)->format('h:i A') }}</small>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <small class="text-truncate">{{ $event->location }}</small>
+                                </div>
+                                
+                                <div class="mb-3 border-top pt-3">
+                                    <p class="card-text mb-3" style="min-height: 60px;">
+                                        {{ \Illuminate\Support\Str::limit($event->description, 100) }}
+                                    </p>
+                                    
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div>
+                                            <i class="fas fa-users text-primary me-1"></i>
+                                            <small>{{ $event->registrations->count() }}/{{ $event->capacity }} participants</small>
+                                        </div>
+                                        <div>
+                                            <small class="text-primary fw-bold">${{ number_format($event->price, 2) }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('events.show', $event) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-info-circle me-2"></i>View Details
+                                    </a>
+                                    @auth
+                                        @if(!$event->registrations()->where('user_id', auth()->id())->exists())
+                                            <form action="{{ route('registrations.store', $event) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-ticket-alt me-2"></i>Book Now
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-success w-100" disabled>
+                                                <i class="fas fa-check-circle me-2"></i>Already Booked
+                                            </button>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn btn-primary">
+                                            <i class="fas fa-ticket-alt me-2"></i>Book Now
+                                        </a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                
+                <!-- Other Category Events -->
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="text-primary"><i class="fas fa-star me-2"></i> Other Events</h3>
+                            <a href="{{ route('events.index') }}" class="btn btn-outline-primary rounded-pill">View All Events <i class="fas fa-arrow-right ms-2"></i></a>
+                        </div>
+                    </div>
+                    
+                    @php
+                        $otherEvents = App\Models\Event::whereNotIn('category', ['Conference', 'Workshop'])
+                            ->where('is_published', true)
+                            ->orderBy('start_date', 'asc')
+                            ->take(3)
+                            ->get();
+                    @endphp
+                    
+                    @foreach($otherEvents as $event)
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card h-100 event-card border-0 shadow-sm">
+                            <div class="position-relative overflow-hidden">
+                                @if($event->image)
+                                    <img class="card-img-top" src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
+                                @else
+                                    <img class="card-img-top" src="{{ asset('asset/img/carousel-1.jpg') }}" alt="Default Event Image">
+                                @endif
+                                <div class="position-absolute top-0 start-0 m-3">
+                                    <div class="badge bg-primary rounded-pill px-3 py-2">{{ $event->category }}</div>
+                                </div>
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <div class="badge bg-dark rounded-pill px-3 py-2">
+                                        {{ $event->type }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-3 text-truncate fw-bold">{{ $event->title }}</h5>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="far fa-calendar-alt text-primary me-2"></i>
+                                    <small>{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }}</small>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="far fa-clock text-primary me-2"></i>
+                                    <small>{{ \Carbon\Carbon::parse($event->start_date)->format('h:i A') }}</small>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <small class="text-truncate">{{ $event->location }}</small>
+                                </div>
+                                
+                                <div class="mb-3 border-top pt-3">
+                                    <p class="card-text mb-3" style="min-height: 60px;">
+                                        {{ \Illuminate\Support\Str::limit($event->description, 100) }}
+                                    </p>
+                                    
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div>
+                                            <i class="fas fa-users text-primary me-1"></i>
+                                            <small>{{ $event->registrations->count() }}/{{ $event->capacity }} participants</small>
+                                        </div>
+                                        <div>
+                                            <small class="text-primary fw-bold">${{ number_format($event->price, 2) }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{{ route('events.show', $event) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-info-circle me-2"></i>View Details
+                                    </a>
+                                    @auth
+                                        @if(!$event->registrations()->where('user_id', auth()->id())->exists())
+                                            <form action="{{ route('registrations.store', $event) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-ticket-alt me-2"></i>Book Now
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-success w-100" disabled>
+                                                <i class="fas fa-check-circle me-2"></i>Already Booked
+                                            </button>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn btn-primary">
+                                            <i class="fas fa-ticket-alt me-2"></i>Book Now
+                                        </a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
-        <!-- Categories Filter End -->
+        <!-- Category Events End -->
 
         <!-- How It Works Start -->
         <div class="container-fluid py-5">
@@ -322,52 +567,43 @@
         <!-- How It Works End -->
 
         <!-- Feature Start -->
-        <div class="container-fluid feature py-5">
-            <div class="container py-5">
-                <div class="row g-4">
-                    <div class="col-lg-4 wow fadeInUp" data-wow-delay="0.2s">
-                        <div class="feature-item">
-                            <img src="{{ asset('asset/img/feature-1.jpg') }}" class="img-fluid rounded w-100" alt="Image">
-                            <div class="feature-content p-4">
-                                <div class="feature-content-inner">
-                                    <h4 class="text-white">Professional Conferences</h4>
-                                    <p class="text-white">Host impactful conferences with our comprehensive event management tools and professional support services.
-                                    </p>
-                                    <a href="#" class="btn btn-primary rounded-pill py-2 px-4">Learn More <i class="fa fa-arrow-right ms-1"></i></a>
-                                </div>
-                            </div>
-                        </div>
+        
+        <!-- Feature End -->
+
+        <!-- Attractions Start -->
+        <div class="container-fluid attractions py-5">
+            <div class="container attractions-section py-5">
+                <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
+                    <h4 class="text-primary">Featured Events</h4>
+                    <h1 class="display-5 text-white mb-4">Explore Our Top Events</h1>
+                    <p class="text-white mb-0">Discover our most popular events across various categories. From conferences to workshops, we have something for everyone. Don't miss these amazing opportunities to learn, network, and grow.
+                    </p>
+                </div>
+                <div class="owl-carousel attractions-carousel wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.2s">
+                        <img src="{{ asset('asset/img/feature-1.jpg') }}" class="img-fluid rounded w-100" alt="Conference">
+                        <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="attractions-name">Conferences</a>
                     </div>
-                    <div class="col-lg-4 wow fadeInUp" data-wow-delay="0.4s">
-                        <div class="feature-item">
-                            <img src="{{ asset('asset/img/feature-2.jpg') }}" class="img-fluid rounded w-100" alt="Image">
-                            <div class="feature-content p-4">
-                                <div class="feature-content-inner">
-                                    <h4 class="text-white">Interactive Workshops</h4>
-                                    <p class="text-white">Create engaging workshops with our interactive tools and participant management features.
-                                    </p>
-                                    <a href="#" class="btn btn-primary rounded-pill py-2 px-4">Learn More <i class="fa fa-arrow-right ms-1"></i></a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.4s">
+                        <img src="{{ asset('asset/img/feature-2.jpg') }}" class="img-fluid rounded w-100" alt="Workshop">
+                        <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="attractions-name">Workshops</a>
                     </div>
-                    <div class="col-lg-4 wow fadeInUp" data-wow-delay="0.6s">
-                        <div class="feature-item">
-                            <img src="{{ asset('asset/img/feature-3.jpg') }}" class="img-fluid rounded w-100" alt="Image">
-                            <div class="feature-content p-4">
-                                <div class="feature-content-inner">
-                                    <h4 class="text-white">Virtual Events</h4>
-                                    <p class="text-white">Host seamless virtual events with our integrated streaming and engagement tools.
-                                    </p>
-                                    <a href="#" class="btn btn-primary rounded-pill py-2 px-4">Learn More <i class="fa fa-arrow-right ms-1"></i></a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.6s">
+                        <img src="{{ asset('asset/img/feature-3.jpg') }}" class="img-fluid rounded w-100" alt="Seminar">
+                        <a href="{{ route('events.search', ['type' => 'Seminar']) }}" class="attractions-name">Seminars</a>
+                    </div>
+                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.8s">
+                        <img src="{{ asset('asset/img/attraction-1.jpg') }}" class="img-fluid rounded w-100" alt="Networking">
+                        <a href="{{ route('events.search', ['type' => 'Networking']) }}" class="attractions-name">Networking Events</a>
+                    </div>
+                    <div class="attractions-item wow fadeInUp" data-wow-delay="1s">
+                        <img src="{{ asset('asset/img/attraction-2.jpg') }}" class="img-fluid rounded w-100" alt="Exhibition">
+                        <a href="{{ route('events.search', ['type' => 'Exhibition']) }}" class="attractions-name">Exhibitions</a>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Feature End -->
+        <!-- Attractions End -->
 
         <!-- About Start -->
         <div id="about" class="container-fluid about pb-5">
@@ -540,58 +776,7 @@
         <!-- Service End -->
 
         <!-- Ticket Packages Start -->
-        <div id="packages" class="container-fluid py-5">
-            <div class="container py-5">
-                <div class="row g-5 align-items-center">
-                    <div class="col-lg-12 col-xl-4 wow fadeInUp" data-wow-delay="0.2s">
-                        <div class="packages-item h-100">
-                            <h4 class="text-primary">Event Packages</h4>
-                            <h1 class="display-5 mb-4">Choose The Perfect Package For Your Event</h1>
-                            <p class="mb-4">Select from our range of event management packages designed to meet your specific needs. From small workshops to large conferences, we have the perfect solution for you.
-                            </p>
-                            <p><i class="fa fa-check text-primary me-2"></i>Professional event management tools</p>
-                            <p><i class="fa fa-check text-primary me-2"></i>Customizable event packages</p>
-                            <p><i class="fa fa-check text-primary me-2"></i>24/7 customer support</p>
-                            <p class="mb-5"><i class="fa fa-check text-primary me-2"></i>Advanced analytics and reporting</p>
-                            <a href="#" class="btn btn-primary rounded-pill py-3 px-5">Get Started</a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.4s">
-                        <div class="pricing-item bg-dark rounded text-center p-5 h-100">
-                            <div class="pb-4 border-bottom">
-                                <h2 class="mb-4 text-primary">Professional Package</h2>
-                                <p class="mb-4">Perfect for medium-sized events and conferences</p>
-                                <h2 class="mb-0 text-primary">$299<span class="text-body fs-5 fw-normal">/month</span></h2>
-                            </div>
-                            <div class="py-4">
-                                <p class="mb-4"><i class="fa fa-check text-primary me-2"></i>Up to 500 attendees</p>
-                                <p class="mb-4"><i class="fa fa-check text-primary me-2"></i>Advanced ticketing</p>
-                                <p class="mb-4"><i class="fa fa-check text-primary me-2"></i>Email marketing</p>
-                                <p class="mb-4"><i class="fa fa-check text-primary me-2"></i>Basic analytics</p>
-                                <p class="mb-4"><i class="fa fa-check text-primary me-2"></i>24/7 support</p>
-                            </div>
-                            <a href="#" class="btn btn-light rounded-pill py-3 px-5">Get Started</a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-xl-4 wow fadeInUp" data-wow-delay="0.6s">
-                        <div class="pricing-item bg-primary rounded text-center p-5 h-100">
-                            <div class="pb-4 border-bottom">
-                                <h2 class="text-dark mb-4">Enterprise Package</h2>
-                                <p class="text-white mb-4">For large-scale events and conferences</p>
-                                <h2 class="text-dark mb-0">$599<span class="text-white fs-5 fw-normal">/month</span></h2>
-                            </div>
-                            <div class="text-white py-4">
-                                <p class="mb-4"><i class="fa fa-check text-dark me-2"></i>Unlimited attendees</p>
-                                <p class="mb-4"><i class="fa fa-check text-dark me-2"></i>Premium features</p>
-                                <p class="mb-4"><i class="fa fa-check text-dark me-2"></i>Advanced analytics</p>
-                                <p class="mb-4"><i class="fa fa-check text-dark me-2"></i>Priority support</p>
-                            </div>
-                            <a href="#" class="btn btn-dark rounded-pill py-3 px-5">Get Started</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
         <!-- Ticket Packages End -->
 
         <!-- Contact Start -->
@@ -726,4 +911,123 @@
                         <p class="mb-2"><i class="fas fa-phone-alt me-3"></i>+012 345 67890</p>
                         <p class="mb-2"><i class="fas fa-envelope me-3"></i>info@eventorg.com</p>
                         <div class="d-flex pt-3">
-                            <a class="btn btn-square btn-light rounded-circle me-2" href=""><i class="fab fa-face
+                            <a class="btn btn-square btn-light rounded-circle me-2" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-square btn-light rounded-circle me-2" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-square btn-light rounded-circle me-2" href=""><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-square btn-light rounded-circle me-2" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid copyright py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        <span class="text-light"><a href="#"><i class="fas fa-copyright text-light me-2"></i>EventORG</a>, All right reserved.</span>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <span class="text-light">Designed By <a href="#" class="text-light">EventORG Team</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+        <!-- JavaScript Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{{ asset('asset/lib/wow/wow.min.js') }}"></script>
+        <script src="{{ asset('asset/lib/easing/easing.min.js') }}"></script>
+        <script src="{{ asset('asset/lib/waypoints/waypoints.min.js') }}"></script>
+        <script src="{{ asset('asset/lib/counterup/counterup.min.js') }}"></script>
+        <script src="{{ asset('asset/lib/lightbox/js/lightbox.min.js') }}"></script>
+        <script src="{{ asset('asset/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+
+        <!-- Template Javascript -->
+        <script src="{{ asset('asset/js/main.js') }}"></script>
+        
+        <!-- Smooth Scrolling -->
+        <script>
+            $(document).ready(function(){
+                // Add smooth scrolling to all links
+                $("a").on('click', function(event) {
+                    // Make sure this.hash has a value before overriding default behavior
+                    if (this.hash !== "") {
+                        // Prevent default anchor click behavior
+                        event.preventDefault();
+                        
+                        // Store hash
+                        var hash = this.hash;
+                        
+                        // Using jQuery's animate() method to add smooth page scroll
+                        $('html, body').animate({
+                            scrollTop: $(hash).offset().top
+                        }, 800, function(){
+                            // Add hash (#) to URL when done scrolling (default click behavior)
+                            window.location.hash = hash;
+                        });
+                    }
+                });
+
+                // Prevent carousel from advancing when interacting with fixed search form
+                $('.fixed-search-form input, .fixed-search-form select, .fixed-search-form button').on('click focus keydown', function(e) {
+                    e.stopPropagation();
+                });
+
+                // Initialize carousel
+                $('.header-carousel').owlCarousel({
+                    autoplay: true,
+                    smartSpeed: 1500,
+                    items: 1,
+                    dots: true,
+                    loop: true,
+                    nav: true,
+                    navText: [
+                        '<i class="fas fa-angle-left"></i>',
+                        '<i class="fas fa-angle-right"></i>'
+                    ]
+                });
+                
+                // Initialize attractions carousel
+                $(".attractions-carousel").owlCarousel({
+                    autoplay: true,
+                    smartSpeed: 2000,
+                    center: false,
+                    dots: false,
+                    loop: true,
+                    margin: 25,
+                    nav : true,
+                    navText : [
+                        '<i class="fa fa-angle-right"></i>',
+                        '<i class="fa fa-angle-left"></i>'
+                    ],
+                    responsiveClass: true,
+                    responsive: {
+                        0:{
+                            items:1
+                        },
+                        576:{
+                            items:2
+                        },
+                        768:{
+                            items:2
+                        },
+                        992:{
+                            items:3
+                        },
+                        1200:{
+                            items:4
+                        },
+                        1400:{
+                            items:4
+                        }
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
