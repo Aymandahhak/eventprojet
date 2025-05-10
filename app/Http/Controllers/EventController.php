@@ -142,13 +142,18 @@ class EventController extends Controller
         return view('events.organizer-events', compact('events'));
     }
 
+    /**
+     * Display the events that the participant is registered for
+     */
     public function participantEvents()
     {
-        $events = auth()->user()->registeredEvents()
-            ->orderBy('start_date')
+        $user = auth()->user();
+        $registeredEvents = $user->registrations()
+            ->with('event')
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
-
-        return view('events.participant-events', compact('events'));
+            
+        return view('events.participant-events', compact('registeredEvents'));
     }
 
     /**
@@ -158,8 +163,11 @@ class EventController extends Controller
     {
         $query = Event::query();
         
+        // Only show published events
+        $query->where('is_published', true);
+        
         // Search by keyword (name or description)
-        if ($request->has('keyword')) {
+        if ($request->has('keyword') && $request->keyword) {
             $keyword = $request->keyword;
             $query->where(function($q) use ($keyword) {
                 $q->where('title', 'like', "%{$keyword}%")
@@ -168,17 +176,17 @@ class EventController extends Controller
         }
         
         // Filter by event type/category
-        if ($request->has('type') && $request->type != 'Select Event Type') {
+        if ($request->has('type') && $request->type) {
             $query->where('category', $request->type);
         }
         
         // Filter by date
         if ($request->has('date') && $request->date) {
-            $query->whereDate('date', $request->date);
+            $query->whereDate('start_date', $request->date);
         }
         
-        $events = $query->paginate(10);
+        $events = $query->orderBy('start_date')->paginate(12);
         
-        return view('events.search', compact('events', 'request'));
+        return view('events.search', compact('events'));
     }
 }

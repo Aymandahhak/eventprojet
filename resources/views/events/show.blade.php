@@ -96,6 +96,14 @@
                             <label class="form-label">Remaining Spots</label>
                             <p class="h4">{{ $event->remaining_capacity }}</p>
                         </div>
+                        <div class="mb-3">
+                            <label for="ticket_quantity" class="form-label">Number of Tickets</label>
+                            <select class="form-select" id="ticket_quantity" name="ticket_quantity">
+                                @for ($i = 1; $i <= min(5, $event->remaining_capacity); $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-ticket-alt"></i> Register Now
                         </button>

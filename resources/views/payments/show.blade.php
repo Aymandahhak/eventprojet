@@ -14,7 +14,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h4 class="mb-0">Complete Payment</h4>
+                    <h4 class="mb-0">Confirm Registration</h4>
                 </div>
                 <div class="card-body">
                     <div class="row mb-4">
@@ -26,25 +26,32 @@
                             <p><strong>Location:</strong> {{ $registration->event->location }}</p>
                         </div>
                         <div class="col-md-6">
-                            <h5>Payment Information</h5>
-                            <p><strong>Amount:</strong> {{ $registration->event->formatted_price }}</p>
+                            <h5>Registration Information</h5>
+                            <p><strong>Ticket Quantity:</strong> {{ $registration->ticket_quantity ?? 1 }}</p>
+                            <p><strong>Price per Ticket:</strong> {{ $registration->event->formatted_price }}</p>
+                            <p><strong>Total Price:</strong> ${{ number_format($registration->total_price ?? $registration->event->price, 2) }}</p>
                             <p><strong>Registration Date:</strong> {{ $registration->created_at->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
 
-                    <form id="payment-form" action="{{ route('payment.process', $registration) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="payment_intent_id" id="payment-intent-id">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> This is a demo application. No actual payment will be processed.
+                    </div>
 
+                    <form action="{{ route('payment.process', $registration) }}" method="POST">
+                        @csrf
                         <div class="mb-3">
-                            <label for="card-element" class="form-label">Credit or Debit Card</label>
-                            <div id="card-element" class="form-control"></div>
-                            <div id="card-errors" class="invalid-feedback" role="alert"></div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agree-terms" required>
+                                <label class="form-check-label" for="agree-terms">
+                                    I agree to the terms and conditions of this event
+                                </label>
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" id="submit-button">
-                                <i class="fas fa-credit-card"></i> Pay {{ $registration->event->formatted_price }}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check-circle"></i> Confirm Registration
                             </button>
                             <a href="{{ route('registrations.show', $registration) }}" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Cancel
@@ -56,59 +63,4 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script src="https://js.stripe.com/v3/"></script>
-<script>
-    const stripe = Stripe('{{ config('services.stripe.key') }}');
-    const elements = stripe.elements();
-    const card = elements.create('card');
-    card.mount('#card-element');
-
-    const form = document.getElementById('payment-form');
-    const submitButton = document.getElementById('submit-button');
-    const clientSecret = '{{ $clientSecret }}';
-
-    card.addEventListener('change', function(event) {
-        const displayError = document.getElementById('card-errors');
-        if (event.error) {
-            displayError.textContent = event.error.message;
-            displayError.style.display = 'block';
-        } else {
-            displayError.textContent = '';
-            displayError.style.display = 'none';
-        }
-    });
-
-    form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        submitButton.disabled = true;
-
-        try {
-            const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: card,
-                    billing_details: {
-                        name: '{{ auth()->user()->name }}',
-                        email: '{{ auth()->user()->email }}'
-                    }
-                }
-            });
-
-            if (error) {
-                const errorElement = document.getElementById('card-errors');
-                errorElement.textContent = error.message;
-                errorElement.style.display = 'block';
-                submitButton.disabled = false;
-            } else {
-                document.getElementById('payment-intent-id').value = paymentIntent.id;
-                form.submit();
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            submitButton.disabled = false;
-        }
-    });
-</script>
-@endpush
 @endsection 

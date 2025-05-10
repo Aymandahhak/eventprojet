@@ -19,7 +19,10 @@ class Registration extends Model
         'user_id',
         'status',
         'payment_status',
-        'payment_id'
+        'payment_id',
+        'ticket_quantity',
+        'total_price',
+        'ticket_code'
     ];
 
     /**

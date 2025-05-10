@@ -40,16 +40,62 @@
 @section('content')
 <div class="container py-4">
     <div class="row mb-4">
-        <div class="col">
-            <h1 class="h3">Upcoming Events</h1>
+        <div class="col-md-8">
+            <h1 class="h3">
+                @if(request('type'))
+                    {{ request('type') }} Events
+                @elseif(request('keyword'))
+                    Search Results for: "{{ request('keyword') }}"
+                @else
+                    Search Results
+                @endif
+            </h1>
         </div>
-        @can('manage-events')
-        <div class="col text-end">
-            <a href="{{ route('events.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Create Event
-            </a>
+        <div class="col-md-4">
+            <form action="{{ route('events.search') }}" method="GET" class="d-flex">
+                <input type="text" name="keyword" class="form-control me-2" placeholder="Search events..." value="{{ request('keyword') }}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
         </div>
-        @endcan
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action="{{ route('events.search') }}" method="GET" class="row g-3">
+                        @if(request('keyword'))
+                            <input type="hidden" name="keyword" value="{{ request('keyword') }}">
+                        @endif
+                        
+                        <div class="col-md-4">
+                            <label class="form-label">Event Type</label>
+                            <select name="type" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="Conference" {{ request('type') == 'Conference' ? 'selected' : '' }}>Conference</option>
+                                <option value="Workshop" {{ request('type') == 'Workshop' ? 'selected' : '' }}>Workshop</option>
+                                <option value="Seminar" {{ request('type') == 'Seminar' ? 'selected' : '' }}>Seminar</option>
+                                <option value="Networking" {{ request('type') == 'Networking' ? 'selected' : '' }}>Networking</option>
+                                <option value="Training" {{ request('type') == 'Training' ? 'selected' : '' }}>Training</option>
+                                <option value="Exhibition" {{ request('type') == 'Exhibition' ? 'selected' : '' }}>Exhibition</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label">Date</label>
+                            <input type="date" name="date" class="form-control" value="{{ request('date') }}">
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">Filter Results</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row g-4">
@@ -131,16 +177,21 @@
             </div>
         </div>
         @empty
-        <div class="col">
+        <div class="col-12">
             <div class="alert alert-info">
-                No events found.
+                <i class="fas fa-info-circle me-2"></i> No events found matching your search criteria.
+            </div>
+            <div class="text-center mt-4">
+                <a href="{{ route('events.index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i> View All Events
+                </a>
             </div>
         </div>
         @endforelse
     </div>
 
     <div class="d-flex justify-content-center mt-5">
-        {{ $events->links() }}
+        {{ $events->appends(request()->query())->links() }}
     </div>
 </div>
-@endsection
+@endsection 

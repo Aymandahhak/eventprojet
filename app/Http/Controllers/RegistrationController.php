@@ -77,11 +77,28 @@ class RegistrationController extends Controller
             return back()->with('error', 'You are already registered for this event.');
         }
 
+        // Validate the quantity
+        $request->validate([
+            'ticket_quantity' => 'nullable|integer|min:1',
+        ]);
+
+        // Set default ticket quantity to 1 if not specified
+        $ticketQuantity = $request->ticket_quantity ?? 1;
+        
+        // Calculate total price
+        $totalPrice = $event->price * $ticketQuantity;
+        
+        // Generate a unique ticket code
+        $ticketCode = 'EVT-' . strtoupper(substr(md5(uniqid()), 0, 8)) . '-' . auth()->id();
+
         // Create registration
         $registration = $event->registrations()->create([
             'user_id' => auth()->id(),
             'status' => 'pending',
-            'payment_status' => 'pending'
+            'payment_status' => 'pending',
+            'ticket_quantity' => $ticketQuantity,
+            'total_price' => $totalPrice,
+            'ticket_code' => $ticketCode
         ]);
 
         // Redirect to payment page

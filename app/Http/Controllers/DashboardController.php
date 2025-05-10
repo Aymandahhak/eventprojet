@@ -77,7 +77,7 @@ class DashboardController extends Controller
             ->get();
             
         // Get user notifications
-        $notifications = \App\Models\Notification::where('user_id', $user->id)
+        $notifications = $user->notifications()
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
@@ -86,7 +86,7 @@ class DashboardController extends Controller
             'totalRegistrations' => $user->registrations()->count(),
             'upcomingEvents' => $user->registeredEvents()->where('start_date', '>', now())->count(),
             'totalTickets' => $user->registrations()->count(), // Each registration represents one ticket
-            'totalNotifications' => \App\Models\Notification::where('user_id', $user->id)->count(),
+            'totalNotifications' => $user->notifications()->count(),
             'daysToNextEvent' => $user->registeredEvents()->where('start_date', '>', now())->min('start_date') 
                 ? now()->diffInDays($user->registeredEvents()->where('start_date', '>', now())->min('start_date'))
                 : 0
@@ -121,8 +121,15 @@ class DashboardController extends Controller
 
     public function profile()
     {
-        return view('dashboard.profile', [
-            'userType' => auth()->user()->role
+        $user = auth()->user();
+        $viewName = 'dashboard.profile';
+        
+        if ($user->role === 'participant' && request()->routeIs('participant.profile')) {
+            $viewName = 'dashboard.participant.profile';
+        }
+        
+        return view($viewName, [
+            'userType' => $user->role
         ]);
     }
 

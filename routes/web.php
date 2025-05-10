@@ -115,6 +115,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/events', [EventController::class, 'participantEvents'])->name('events');
         Route::get('/tickets', [App\Http\Controllers\TicketController::class, 'index'])->name('tickets');
         Route::get('/tickets/{registration}/download', [App\Http\Controllers\TicketController::class, 'download'])->name('tickets.download');
+        Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+        Route::put('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
     });
 });
 

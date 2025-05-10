@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Registration;
 use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
 
 class PaymentController extends Controller
 {
@@ -18,21 +16,8 @@ class PaymentController extends Controller
                 ->with('info', 'Payment already completed.');
         }
 
-        // Set your secret key
-        Stripe::setApiKey(config('services.stripe.secret'));
-
-        // Create a PaymentIntent
-        $paymentIntent = PaymentIntent::create([
-            'amount' => $registration->event->price * 100, // amount in cents
-            'currency' => 'usd',
-            'metadata' => [
-                'registration_id' => $registration->id
-            ]
-        ]);
-
         return view('payments.show', [
-            'registration' => $registration,
-            'clientSecret' => $paymentIntent->client_secret
+            'registration' => $registration
         ]);
     }
 
@@ -40,28 +25,15 @@ class PaymentController extends Controller
     {
         $this->authorize('update', $registration);
 
-        $validated = $request->validate([
-            'payment_intent_id' => 'required|string'
+        // Mock payment process - always successful for student project
+        $registration->update([
+            'payment_status' => 'paid',
+            'payment_id' => 'MOCK-' . time() . '-' . rand(1000, 9999),
+            'status' => 'confirmed'
         ]);
 
-        // Set your secret key
-        Stripe::setApiKey(config('services.stripe.secret'));
-
-        // Retrieve the PaymentIntent
-        $paymentIntent = PaymentIntent::retrieve($validated['payment_intent_id']);
-
-        if ($paymentIntent->status === 'succeeded') {
-            $registration->update([
-                'payment_status' => 'paid',
-                'payment_id' => $paymentIntent->id,
-                'status' => 'confirmed'
-            ]);
-
-            return redirect()->route('registrations.show', $registration)
-                ->with('success', 'Payment successful! Your registration is confirmed.');
-        }
-
-        return back()->with('error', 'Payment failed. Please try again.');
+        return redirect()->route('registrations.show', $registration)
+            ->with('success', 'Payment successful! Your registration is confirmed.');
     }
 
     public function success(Registration $registration)

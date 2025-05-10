@@ -52,7 +52,7 @@
                         <a href="#home" class="nav-item nav-link active">Home</a>
                         <a href="#about" class="nav-item nav-link">About</a>
                         <a href="#services" class="nav-item nav-link">Services</a>
-                        <a href="#packages" class="nav-item nav-link">Packages</a>
+                        <a href="#" class="nav-item nav-link">events</a>
                         <a href="#contact" class="nav-item nav-link">Contact</a>
                     </div>
                     <div class="d-flex align-items-center">
@@ -98,7 +98,7 @@
         <!-- Carousel Start -->
         <div id="home" class="header-carousel owl-carousel">
             <div class="header-carousel-item">
-                <img src="{{ asset('asset/img/carousel-1.jpg') }}" class="img-fluid w-100" alt="Image">
+                <img src="{{ asset('asset/img/env2.jpg') }}" class="img-fluid w-100" alt="Image">
                 <div class="carousel-caption">
                     <div class="container align-items-center py-4">
                         <div class="row g-5 align-items-center">
@@ -235,8 +235,6 @@
                             <div class="position-relative overflow-hidden">
                                 @if($event->image)
                                     <img class="card-img-top" src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
-                                @else
-                                    <img class="card-img-top" src="{{ asset('asset/img/carousel-1.jpg') }}" alt="Default Event Image">
                                 @endif
                                 <div class="position-absolute top-0 start-0 m-3">
                                     <div class="badge bg-primary rounded-pill px-3 py-2">{{ $event->category }}</div>
@@ -289,6 +287,7 @@
                                         @if(!$event->registrations()->where('user_id', auth()->id())->exists())
                                             <form action="{{ route('registrations.store', $event) }}" method="POST">
                                                 @csrf
+                                                <input type="hidden" name="ticket_quantity" value="1">
                                                 <button type="submit" class="btn btn-primary w-100">
                                                     <i class="fas fa-ticket-alt me-2"></i>Book Now
                                                 </button>
@@ -333,8 +332,6 @@
                             <div class="position-relative overflow-hidden">
                                 @if($event->image)
                                     <img class="card-img-top" src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
-                                @else
-                                    <img class="card-img-top" src="{{ asset('asset/img/carousel-1.jpg') }}" alt="Default Event Image">
                                 @endif
                                 <div class="position-absolute top-0 start-0 m-3">
                                     <div class="badge bg-primary rounded-pill px-3 py-2">{{ $event->category }}</div>
@@ -387,6 +384,7 @@
                                         @if(!$event->registrations()->where('user_id', auth()->id())->exists())
                                             <form action="{{ route('registrations.store', $event) }}" method="POST">
                                                 @csrf
+                                                <input type="hidden" name="ticket_quantity" value="1">
                                                 <button type="submit" class="btn btn-primary w-100">
                                                     <i class="fas fa-ticket-alt me-2"></i>Book Now
                                                 </button>
@@ -431,8 +429,6 @@
                             <div class="position-relative overflow-hidden">
                                 @if($event->image)
                                     <img class="card-img-top" src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
-                                @else
-                                    <img class="card-img-top" src="{{ asset('asset/img/carousel-1.jpg') }}" alt="Default Event Image">
                                 @endif
                                 <div class="position-absolute top-0 start-0 m-3">
                                     <div class="badge bg-primary rounded-pill px-3 py-2">{{ $event->category }}</div>
@@ -485,6 +481,7 @@
                                         @if(!$event->registrations()->where('user_id', auth()->id())->exists())
                                             <form action="{{ route('registrations.store', $event) }}" method="POST">
                                                 @csrf
+                                                <input type="hidden" name="ticket_quantity" value="1">
                                                 <button type="submit" class="btn btn-primary w-100">
                                                     <i class="fas fa-ticket-alt me-2"></i>Book Now
                                                 </button>
@@ -581,23 +578,23 @@
                 </div>
                 <div class="owl-carousel attractions-carousel wow fadeInUp" data-wow-delay="0.1s">
                     <div class="attractions-item wow fadeInUp" data-wow-delay="0.2s">
-                        <img src="{{ asset('asset/img/feature-1.jpg') }}" class="img-fluid rounded w-100" alt="Conference">
+                        <img src="{{ asset('asset/img/env1.jpg') }}" class="img-fluid rounded w-100" alt="Conference">
                         <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="attractions-name">Conferences</a>
                     </div>
                     <div class="attractions-item wow fadeInUp" data-wow-delay="0.4s">
-                        <img src="{{ asset('asset/img/feature-2.jpg') }}" class="img-fluid rounded w-100" alt="Workshop">
+                        <img src="{{ asset('asset/img/env2.jpg') }}" class="img-fluid rounded w-100" alt="Workshop">
                         <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="attractions-name">Workshops</a>
                     </div>
                     <div class="attractions-item wow fadeInUp" data-wow-delay="0.6s">
-                        <img src="{{ asset('asset/img/feature-3.jpg') }}" class="img-fluid rounded w-100" alt="Seminar">
+                        <img src="{{ asset('asset/img/env3.jpg') }}" class="img-fluid rounded w-100" alt="Seminar">
                         <a href="{{ route('events.search', ['type' => 'Seminar']) }}" class="attractions-name">Seminars</a>
                     </div>
                     <div class="attractions-item wow fadeInUp" data-wow-delay="0.8s">
-                        <img src="{{ asset('asset/img/attraction-1.jpg') }}" class="img-fluid rounded w-100" alt="Networking">
+                        <img src="{{ asset('asset/img/env4.jpg') }}" class="img-fluid rounded w-100" alt="Networking">
                         <a href="{{ route('events.search', ['type' => 'Networking']) }}" class="attractions-name">Networking Events</a>
                     </div>
                     <div class="attractions-item wow fadeInUp" data-wow-delay="1s">
-                        <img src="{{ asset('asset/img/attraction-2.jpg') }}" class="img-fluid rounded w-100" alt="Exhibition">
+                        <img src="{{ asset('asset/img/env5.jpg') }}" class="img-fluid rounded w-100" alt="Exhibition">
                         <a href="{{ route('events.search', ['type' => 'Exhibition']) }}" class="attractions-name">Exhibitions</a>
                     </div>
                 </div>

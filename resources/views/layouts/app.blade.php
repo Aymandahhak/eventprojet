@@ -102,5 +102,8 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('asset/js/main.js') }}"></script>
+    
+    <!-- Stack for additional scripts -->
+    @stack('scripts')
 </body>
 </html>
