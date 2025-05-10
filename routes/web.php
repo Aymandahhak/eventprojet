@@ -8,6 +8,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Auth;
+//nn
+use App\Http\Controllers\AdminController;
+
 
 // Public routes
 Route::get('/', function () {
@@ -123,3 +126,12 @@ Route::middleware(['auth'])->group(function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/admin/registrations', action: [AdminController::class, 'registrations'])->name('admin.registrations');
+
+    
+
+//admin events
+
+
+
+
