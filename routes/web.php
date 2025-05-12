@@ -8,6 +8,14 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UserModifyController; 
+use App\Http\Controllers\EventAdminController;
+use App\Http\Controllers\RegistrationadminController;
+use App\Http\Controllers\StatisticController;
+
+
+
+
 
 // Public routes
 Route::get('/', function () {
@@ -98,9 +106,30 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
         Route::get('/users', [DashboardController::class, 'users'])->name('users');
-        Route::get('/events', [DashboardController::class, 'events'])->name('events');
-        Route::get('/statistics', [DashboardController::class, 'statistics'])->name('statistics');
+        // Route::get('/events', [DashboardController::class, 'events'])->name('events');
+        // Route::get('/statistics', [DashboardController::class, 'statistics'])->name('statistics');
         Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
+            // Route::get('/registrations', [RegistrationController::class, 'index'])->name('registrations');
+                // Routes pour modifier, supprimer, bannir, etc. {users}
+            Route::get('/users/edit/{id}', [UserModifyController::class, 'edit'])->name('users.edit');
+            Route::put('/users/update/{id}', [UserModifyController::class, 'update'])->name('users.update');
+            Route::delete('/users/delete/{id}', [UserModifyController::class, 'destroy'])->name('users.delete');
+            Route::post('/users/ban/{id}', [UserModifyController::class, 'ban'])->name('users.ban');
+            Route::post('/users/unban/{id}', [UserModifyController::class, 'unban'])->name('users.unban');
+            //event
+            Route::get('/events', [EventAdminController::class, 'index'])->name('events.index');
+
+            Route::post('/events/publish/{id}', [EventAdminController::class, 'publish'])->name('events.publish');
+            Route::post('/events/unpublish/{id}', [EventAdminController::class, 'unpublish'])->name('events.unpublish');
+            Route::delete('/events/delete/{id}', [EventAdminController::class, 'destroy'])->name('events.delete');
+            // registration
+                Route::get('/registrations', [RegistrationadminController::class, 'index'])->name('admin.registrations.index');
+                Route::post('/registrations/{id}/validate', [RegistrationadminController::class, 'validateRegistration'])->name('registrations.validate');
+                Route::post('/registrations/{id}/deactivate', [RegistrationadminController::class, 'deactivateRegistration'])->name('registrations.deactivate');
+                Route::delete('/registrations/{id}', [RegistrationadminController::class, 'destroy'])->name('registrations.destroy');
+                Route::get('/registrations', [RegistrationadminController::class, 'index'])->name('registrations.index');
+                Route::get('/statistics', [StatisticController::class, 'index'])->name('statistics.index');
+
     });
 
     Route::middleware(['role:organizer'])->prefix('organizer')->name('organizer.')->group(function () {
