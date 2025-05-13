@@ -122,15 +122,16 @@ class DashboardController extends Controller
     public function profile()
     {
         $user = auth()->user();
-        $viewName = 'dashboard.profile';
         
-        if ($user->role === 'participant' && request()->routeIs('participant.profile')) {
-            $viewName = 'dashboard.participant.profile';
+        if ($user->role === 'participant') {
+            return view('dashboard.participant.profile', [
+                'userType' => $user->role
+            ]);
+        } else {
+            return view('dashboard.profile', [
+                'userType' => $user->role
+            ]);
         }
-        
-        return view($viewName, [
-            'userType' => $user->role
-        ]);
     }
 
     public function updateProfile(Request $request)

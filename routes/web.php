@@ -87,6 +87,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/registrations', [RegistrationController::class, 'index'])->name('registrations.index');
     Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])->name('registrations.show');
     Route::put('/registrations/{registration}/cancel', [RegistrationController::class, 'cancel'])->name('registrations.cancel');
+    Route::put('/registrations/{registration}/status', [RegistrationController::class, 'updateStatus'])->name('registrations.update-status');
 
     // Payment routes
     Route::get('/payments/{registration}', [PaymentController::class, 'show'])->name('payment.show');

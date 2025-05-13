@@ -27,6 +27,206 @@
 
         <!-- Template Stylesheet -->
         <link href="{{ asset('asset/css/style.css') }}" rel="stylesheet">
+        
+        <!-- Custom colors and consolidated styles -->
+        <style>
+            /* Base & Color Styles */
+            body {
+                background-color: #D1E0D7;
+            }
+            
+            .btn-primary, .bg-primary, .btn-primary:hover, .btn-primary:focus {
+                background-color: #607EBC !important;
+                border-color: #607EBC !important;
+            }
+            
+            .btn-outline-primary {
+                color: #607EBC !important;
+                border-color: #607EBC !important;
+            }
+            
+            .btn-outline-primary:hover {
+                background-color: #607EBC !important;
+                color: white !important;
+            }
+            
+            .text-primary {
+                color: #607EBC !important;
+            }
+            
+            /* Attractions Styles */
+            .attractions {
+                position: relative;
+                padding: 0;
+                background: url('{{ asset('asset/img/env14.jpg') }}') center center no-repeat;
+                background-size: cover;
+                width: 100%;
+                overflow: hidden;
+            }
+            
+            .attractions:before {
+                position: absolute;
+                content: "";
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                background: rgba(0, 0, 0, 0);
+            }
+
+            .attractions-section {
+                position: relative;
+                z-index: 1;
+                width: 100%;
+                padding: 60px 0;
+            }
+            
+            /* Optimized Attractions Slider */
+            .attraction-slider {
+                position: relative;
+                overflow: hidden;
+                width: 100%;
+                margin: 0 auto;
+                padding: 0;
+            }
+            
+            /* Clone the slider track to create continuous effect */
+            .slider-track {
+                display: flex;
+                animation: scroll-left 60s linear infinite;
+                width: fit-content;
+                will-change: transform;
+                transform: translate3d(0, 0, 0); /* Hardware acceleration */
+            }
+            
+            .attraction-item {
+                position: relative;
+                height: 450px;
+                width: 350px;
+                margin-right: 20px;
+                flex-shrink: 0;
+                border-radius: 0;
+                overflow: hidden;
+                box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            }
+            
+            .attraction-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.8s;
+                will-change: transform;
+            }
+            
+            .attraction-item:hover img {
+                transform: scale(1.2);
+            }
+            
+            .attraction-item .attractions-name {
+                position: absolute;
+                width: 100%;
+                height: auto;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                margin: 0;
+                padding: 20px;
+                text-align: center;
+                background: rgba(0, 0, 0, 0.7);
+                transition: all 0.5s;
+                text-decoration: none;
+                color: #FFFFFF;
+                font-size: 22px;
+                font-weight: 600;
+                display: block;
+            }
+            
+            .attraction-item:hover .attractions-name {
+                background: rgba(0, 0, 0, 0.9);
+            }
+            
+            /* Animation for continuous scrolling */
+            @keyframes scroll-left {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(calc(-350px * 6 - 20px * 6)); /* Width of items + gap, multiplied by number of items */
+                }
+            }
+            
+            /* Hide scrollbar */
+            .attraction-slider::-webkit-scrollbar {
+                display: none;
+            }
+            
+            /* Pause animation on hover - uncomment if needed */
+            /* 
+            .attraction-slider:hover .slider-track {
+                animation-play-state: paused;
+            }
+            */
+            
+            /* Remove existing carousel styles */
+            /* Adjust the carousel container for full width */
+            .owl-carousel.attractions-carousel {
+                margin: 0 -15px;
+                width: calc(100% + 30px);
+            }
+            
+            /* Featured Items Styles */
+            .featured-item {
+                position: relative;
+                overflow: hidden;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                margin: 10px;
+                transition: all 0.3s ease;
+            }
+            
+            .featured-item:hover {
+                transform: translateY(-10px);
+            }
+            
+            .featured-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(to top, rgba(96, 126, 188, 0.9), transparent);
+                color: white;
+                padding: 20px;
+                transition: all 0.3s ease;
+            }
+            
+            .featured-item:hover .featured-overlay {
+                background: linear-gradient(to top, rgba(96, 126, 188, 1), rgba(96, 126, 188, 0.6));
+                bottom: 0;
+                top: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .featured-overlay h4 {
+                color: white;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            
+            .featured-overlay p {
+                color: white;
+                margin-bottom: 0;
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+            
+            .featured-item:hover .featured-overlay p {
+                opacity: 1;
+            }
+        </style>
     </head>
 
     <body>
@@ -182,33 +382,105 @@
 
         <!-- Categories Filter End -->
 
-        <!-- Category Events Start -->
+        <!-- Featured Events Start (Replacing Category Events) -->
         <div class="container-fluid py-5">
             <div class="container py-5">
                 <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
-                    <h4 class="text-primary">Event Categories</h4>
-                    <h1 class="display-5 mb-4">Browse Events by Category</h1>
+                    <h4 class="text-primary">Featured Events</h4>
+                    <h1 class="display-5 mb-4">Explore Our Top Events</h1>
+                    <p class="mb-0">Discover our most popular events across various categories. From conferences to workshops, we have something for everyone. Don't miss these amazing opportunities to learn, network, and grow.</p>
                 </div>
                 
-                <!-- Category Filter Buttons -->
-                <div class="row g-4 justify-content-center mb-5">
-                    <div class="col-lg-2 col-md-4 col-6">
-                        <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Conference</a>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-6">
-                        <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Workshop</a>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-6">
-                        <a href="{{ route('events.search', ['type' => 'Seminar']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Seminar</a>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-6">
-                        <a href="{{ route('events.search', ['type' => 'Networking']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Networking</a>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-6">
-                        <a href="{{ route('events.search', ['type' => 'Training']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Training</a>
-                    </div>
-                    <div class="col-lg-2 col-md-4 col-6">
-                        <a href="{{ route('events.search', ['type' => 'Exhibition']) }}" class="btn btn-outline-primary rounded-pill py-3 px-4 w-100 mb-2">Exhibition</a>
+                <!-- Category Filter Carousel -->
+                <div class="container-fluid attractions px-0">
+                    <div class="attractions-section py-5">
+                        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px; background-color: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; margin-bottom: 40px;">
+                            <h4 class="text-primary">Event Categories</h4>
+                            <h1 class="display-5 text-white mb-4">Explore Our Event Categories</h1>
+                            <p class="text-white mb-0">Discover our wide range of event categories designed for professionals across all industries. From conferences to workshops, we offer events that help you learn, network, and grow your career.
+                            </p>
+                        </div>
+                        
+                        <!-- Replace owl carousel with optimized CSS animation -->
+                        <div class="attraction-slider wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="slider-track">
+                                <!-- Original set -->
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env1.jpg') }}" alt="Conference">
+                                    <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="attractions-name">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>Conferences
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env2.jpg') }}" alt="Workshop">
+                                    <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="attractions-name">
+                                        <i class="fas fa-laptop-code me-2"></i>Workshops
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env3.jpg') }}" alt="Seminar">
+                                    <a href="{{ route('events.search', ['type' => 'Seminar']) }}" class="attractions-name">
+                                        <i class="fas fa-book-reader me-2"></i>Seminars
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env4.jpg') }}" alt="Networking">
+                                    <a href="{{ route('events.search', ['type' => 'Networking']) }}" class="attractions-name">
+                                        <i class="fas fa-handshake me-2"></i>Networking
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env5.jpg') }}" alt="Training">
+                                    <a href="{{ route('events.search', ['type' => 'Training']) }}" class="attractions-name">
+                                        <i class="fas fa-graduation-cap me-2"></i>Training
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env9.jpg') }}" alt="Exhibition">
+                                    <a href="{{ route('events.search', ['type' => 'Exhibition']) }}" class="attractions-name">
+                                        <i class="fas fa-building me-2"></i>Exhibition
+                                    </a>
+                                </div>
+                                
+                                <!-- Clone set for continuous scrolling -->
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env1.jpg') }}" alt="Conference">
+                                    <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="attractions-name">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>Conferences
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env2.jpg') }}" alt="Workshop">
+                                    <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="attractions-name">
+                                        <i class="fas fa-laptop-code me-2"></i>Workshops
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env3.jpg') }}" alt="Seminar">
+                                    <a href="{{ route('events.search', ['type' => 'Seminar']) }}" class="attractions-name">
+                                        <i class="fas fa-book-reader me-2"></i>Seminars
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env4.jpg') }}" alt="Networking">
+                                    <a href="{{ route('events.search', ['type' => 'Networking']) }}" class="attractions-name">
+                                        <i class="fas fa-handshake me-2"></i>Networking
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env5.jpg') }}" alt="Training">
+                                    <a href="{{ route('events.search', ['type' => 'Training']) }}" class="attractions-name">
+                                        <i class="fas fa-graduation-cap me-2"></i>Training
+                                    </a>
+                                </div>
+                                <div class="attraction-item">
+                                    <img src="{{ asset('asset/img/env9.jpg') }}" alt="Exhibition">
+                                    <a href="{{ route('events.search', ['type' => 'Exhibition']) }}" class="attractions-name">
+                                        <i class="fas fa-building me-2"></i>Exhibition
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -504,7 +776,7 @@
                 </div>
             </div>
         </div>
-        <!-- Category Events End -->
+        <!-- Featured Events End -->
 
         <!-- How It Works Start -->
         <div class="container-fluid py-5">
@@ -566,41 +838,6 @@
         <!-- Feature Start -->
         
         <!-- Feature End -->
-
-        <!-- Attractions Start -->
-        <div class="container-fluid attractions py-5">
-            <div class="container attractions-section py-5">
-                <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
-                    <h4 class="text-primary">Featured Events</h4>
-                    <h1 class="display-5 text-white mb-4">Explore Our Top Events</h1>
-                    <p class="text-white mb-0">Discover our most popular events across various categories. From conferences to workshops, we have something for everyone. Don't miss these amazing opportunities to learn, network, and grow.
-                    </p>
-                </div>
-                <div class="owl-carousel attractions-carousel wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.2s">
-                        <img src="{{ asset('asset/img/env1.jpg') }}" class="img-fluid rounded w-100" alt="Conference">
-                        <a href="{{ route('events.search', ['type' => 'Conference']) }}" class="attractions-name">Conferences</a>
-                    </div>
-                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.4s">
-                        <img src="{{ asset('asset/img/env2.jpg') }}" class="img-fluid rounded w-100" alt="Workshop">
-                        <a href="{{ route('events.search', ['type' => 'Workshop']) }}" class="attractions-name">Workshops</a>
-                    </div>
-                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.6s">
-                        <img src="{{ asset('asset/img/env3.jpg') }}" class="img-fluid rounded w-100" alt="Seminar">
-                        <a href="{{ route('events.search', ['type' => 'Seminar']) }}" class="attractions-name">Seminars</a>
-                    </div>
-                    <div class="attractions-item wow fadeInUp" data-wow-delay="0.8s">
-                        <img src="{{ asset('asset/img/env4.jpg') }}" class="img-fluid rounded w-100" alt="Networking">
-                        <a href="{{ route('events.search', ['type' => 'Networking']) }}" class="attractions-name">Networking Events</a>
-                    </div>
-                    <div class="attractions-item wow fadeInUp" data-wow-delay="1s">
-                        <img src="{{ asset('asset/img/env5.jpg') }}" class="img-fluid rounded w-100" alt="Exhibition">
-                        <a href="{{ route('events.search', ['type' => 'Exhibition']) }}" class="attractions-name">Exhibitions</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Attractions End -->
 
         <!-- About Start -->
         <div id="about" class="container-fluid about pb-5">
@@ -947,7 +1184,7 @@
         <!-- Template Javascript -->
         <script src="{{ asset('asset/js/main.js') }}"></script>
         
-        <!-- Smooth Scrolling -->
+        <!-- Consolidated JavaScript -->
         <script>
             $(document).ready(function(){
                 // Add smooth scrolling to all links
@@ -989,18 +1226,18 @@
                     ]
                 });
                 
-                // Initialize attractions carousel
-                $(".attractions-carousel").owlCarousel({
+                // Initialize featured carousel
+                $(".featured-carousel").owlCarousel({
                     autoplay: true,
                     smartSpeed: 2000,
                     center: false,
-                    dots: false,
+                    dots: true,
                     loop: true,
                     margin: 25,
                     nav : true,
                     navText : [
-                        '<i class="fa fa-angle-right"></i>',
-                        '<i class="fa fa-angle-left"></i>'
+                        '<i class="fa fa-angle-left"></i>',
+                        '<i class="fa fa-angle-right"></i>'
                     ],
                     responsiveClass: true,
                     responsive: {
@@ -1011,15 +1248,9 @@
                             items:2
                         },
                         768:{
-                            items:2
-                        },
-                        992:{
                             items:3
                         },
-                        1200:{
-                            items:4
-                        },
-                        1400:{
+                        992:{
                             items:4
                         }
                     }
