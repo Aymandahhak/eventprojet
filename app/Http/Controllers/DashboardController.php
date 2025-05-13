@@ -22,21 +22,45 @@ class DashboardController extends Controller
         }
     }
 
-    public function admin()
-    {
-        $stats = [
-            'totalUsers' => User::count(),
-            'activeEvents' => Event::where('is_published', true)->count(),
-            'totalRegistrations' => Registration::count(),
-            'totalRevenue' => Registration::sum('total_price'),
-            'newUsersPercent' => 12, // This should be calculated based on your needs
-            'newEventsPercent' => 8,
-            'newRegistrationsPercent' => 15,
-            'revenueGrowthPercent' => 22
-        ];
+     public function admin()
+{
+    $stats = [
+        'totalUsers' => User::count(),
+        'activeEvents' => Event::where('is_published', true)->count(),
+        'totalRegistrations' => Registration::count(),
+        'totalRevenue' => Registration::sum('total_price'),
+        'newUsersPercent' => 12,
+        'newEventsPercent' => 8,
+        'newRegistrationsPercent' => 15,
+        'revenueGrowthPercent' => 22
+    ];
 
-        return view('dashboard.admin', compact('stats'));
-    }
+    // Exemples d'activités récentes
+    $recentActivities = collect([
+        (object)[
+            'type' => 'user',
+            'title' => 'New user registered',
+            'description' => 'A new user just joined the platform.',
+            'created_at' => now()->subMinutes(30)
+        ],
+        (object)[
+            'type' => 'event',
+            'title' => 'New event created',
+            'description' => 'An organizer published a new event.',
+            'created_at' => now()->subHours(1)
+        ],
+    ]);
+
+    // Approvals fictifs : à adapter à ton système de validation
+    $pendingApprovals = Registration::where('status', 'pending')
+        ->with('user') // Assure-toi que la relation 'user' existe
+        ->latest()
+        ->take(5)
+        ->get();
+
+    return view('dashboard.admin', compact('stats', 'recentActivities', 'pendingApprovals'));
+}
+
 
     public function organizer()
     {

@@ -95,15 +95,18 @@
                             <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
                                 <i class="fas fa-users"></i> Users
                             </a>
-                            <a href="{{ route('admin.events') }}" class="nav-link {{ request()->routeIs('admin.events') ? 'active' : '' }}">
+                            <a href="{{ route('admin.events.index') }}" class="nav-link {{ request()->routeIs('admin.events') ? 'active' : '' }}">
                                 <i class="fas fa-calendar-alt"></i> Events
                             </a>
-                            <a href="{{ route('admin.registrations') }}" class="nav-link {{ request()->routeIs('admin.registrations') ? 'active' : '' }}">
+                            <a href="{{route('admin.registrations.index')}}" class="nav-link {{ request()->routeIs('admin.registrations') ? 'active' : '' }}">
                                 <i class="fas fa-ticket-alt"></i> Registrations
                             </a>
-                            <a href="{{ route('admin.statistics') }}" class="nav-link {{ request()->routeIs('admin.statistics') ? 'active' : '' }}">
+                             <a href="{{ route('admin.statistics.index') }}" class="nav-link {{ request()->routeIs('admin.statistics.index') ? 'active' : '' }}">
                                 <i class="fas fa-chart-bar"></i> Statistics
                             </a>
+
+
+                            
                             <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
                                 <i class="fas fa-cog"></i> Settings
                             </a>
