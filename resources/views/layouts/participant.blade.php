@@ -1,482 +1,841 @@
-@extends('layouts.main')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-@section('title', 'Participant Dashboard - EventORG')
+    <title>@yield('title', 'Participant Dashboard - EventORG')</title>
 
-@section('styles')
-<style>
-    /* Modern Navigation Bar styling */
-    .nav-bar {
-        background-color: #fff;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        z-index: 100;
-    }
+    <!-- Google Web Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wdth,wght@0,75..100,300..800;1,75..100,300..800&display=swap" rel="stylesheet"> 
     
-    .navbar-brand h1 {
-        margin-bottom: 0;
-        color: #333;
-        transition: all 0.3s;
-    }
-    
-    .navbar-brand:hover h1 {
-        transform: scale(1.05);
-    }
-    
-    .nav-item {
-        padding: 0 0.75rem;
-        position: relative;
-    }
-    
-    .nav-link {
-        color: #555 !important;
-        font-weight: 500;
-        padding: 25px 0;
-        transition: all 0.3s;
-        position: relative;
-    }
-    
-    .nav-link:hover,
-    .nav-link.active {
-        color: #607EBC !important;
-    }
-    
-    .nav-link::after {
-        content: '';
-        position: absolute;
-        width: 0;
-        height: 2px;
-        bottom: 20px;
-        left: 0;
-        background-color: #607EBC;
-        transition: width 0.3s;
-    }
-    
-    .nav-link:hover::after,
-    .nav-link.active::after {
-        width: 100%;
-    }
-    
-    .dropdown-menu {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-        padding: 1rem 0;
-    }
-    
-    .dropdown-item {
-        padding: 0.5rem 1.5rem;
-        font-weight: 500;
-        color: #555;
-        transition: all 0.3s;
-    }
-    
-    .dropdown-item:hover {
-        color: #607EBC;
-        background-color: rgba(96, 126, 188, 0.1);
-    }
-    
-    .dropdown-item i {
-        margin-right: 0.5rem;
-        color: #607EBC;
-    }
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    /* Modern sidebar styling */
-    .dashboard-sidebar {
-        background: linear-gradient(135deg, #6259ca 0%, #8a79fa 100%);
-        border-radius: 20px;
-        min-height: calc(100vh - 70px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        position: relative;
-        transition: all 0.3s ease;
-    }
+    <!-- Libraries Stylesheet -->
+    <link href="{{ asset('asset/lib/animate/animate.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('asset/lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('asset/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
     
-    .dashboard-sidebar::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        z-index: 0;
-    }
+    <!-- Feather Icons -->
+    <link href="https://unpkg.com/feather-icons/dist/feather.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
     
-    .dashboard-sidebar .user-profile {
-        position: relative;
-        z-index: 1;
-        padding: 2.5rem 1.5rem;
-        text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
+    <!-- Bootstrap CSS -->
+    <link href="{{ asset('asset/css/bootstrap.min.css') }}" rel="stylesheet">
+
+    @yield('styles')
     
-    .dashboard-sidebar .nav-wrapper {
-        position: relative;
-        z-index: 1;
-        padding-top: 1rem;
-    }
-    
-    .dashboard-sidebar .avatar-container {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        margin: 0 auto 1rem;
-        perspective: 800px;
-    }
-    
-    .dashboard-sidebar .avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 20px;
-        border: 4px solid rgba(255, 255, 255, 0.2);
-        object-fit: cover;
-        transition: all 0.5s ease;
-        transform: rotateY(0);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
-    
-    .dashboard-sidebar .avatar-container:hover .avatar {
-        transform: rotateY(10deg);
-        border-color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .dashboard-sidebar .avatar-container::after {
-        content: "";
-        position: absolute;
-        top: 5px;
-        left: 5px;
-        right: 5px;
-        bottom: 5px;
-        border-radius: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        opacity: 0;
-        transform: scale(1.1);
-        transition: all 0.3s ease;
-    }
-    
-    .dashboard-sidebar .avatar-container:hover::after {
-        opacity: 1;
-        transform: scale(1);
-    }
-    
-    .dashboard-sidebar .nav-link {
-        color: rgba(255, 255, 255, 0.85);
-        border-radius: 12px;
-        margin: 0.5rem 1rem;
-        padding: 0.85rem 1.25rem;
-        transition: all 0.3s ease;
-        position: relative;
-        z-index: 1;
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-    }
-    
-    .dashboard-sidebar .nav-link::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.1);
-        transition: all 0.5s ease;
-        z-index: -1;
-    }
-    
-    .dashboard-sidebar .nav-link:hover {
-        color: #fff;
-        transform: translateX(5px);
-    }
-    
-    .dashboard-sidebar .nav-link:hover::before {
-        left: 0;
-    }
-    
-    .dashboard-sidebar .nav-link.active {
-        background: #fff;
-        color: #6259ca;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        font-weight: 600;
-    }
-    
-    .dashboard-sidebar .nav-link.active i {
-        color: #6259ca;
-    }
-    
-    .dashboard-sidebar .nav-link i {
-        width: 24px;
-        text-align: center;
-        margin-right: 12px;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-    }
-    
-    .dashboard-sidebar .nav-link:hover i {
-        transform: translateY(-2px);
-    }
-    
-    .dashboard-sidebar .find-events-btn {
-        background: #fff;
-        color: #6259ca;
-        border-radius: 12px;
-        padding: 0.85rem 1.5rem;
-        margin: 1.5rem 1rem;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .dashboard-sidebar .find-events-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    
-    .dashboard-sidebar .find-events-btn i {
-        margin-right: 10px;
-        transition: all 0.3s ease;
-    }
-    
-    .dashboard-sidebar .find-events-btn:hover i {
-        transform: translateX(-3px);
-    }
-    
-    /* Creative header styling */
-    .dashboard-header {
-        background: linear-gradient(to right, #6259ca, #8a79fa);
-        padding: 3rem 0 6rem;
-        margin-bottom: 3rem;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .dashboard-header::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
-        z-index: 0;
-    }
-    
-    .dashboard-header .container {
-        position: relative;
-        z-index: 1;
-    }
-    
-    .dashboard-header .particle {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-    }
-    
-    .dashboard-header .particle:nth-child(1) {
-        top: 20%;
-        left: 10%;
-        width: 80px;
-        height: 80px;
-        animation: float 8s infinite ease-in-out;
-    }
-    
-    .dashboard-header .particle:nth-child(2) {
-        top: 60%;
-        left: 20%;
-        width: 120px;
-        height: 120px;
-        animation: float 12s infinite ease-in-out;
-    }
-    
-    .dashboard-header .particle:nth-child(3) {
-        top: 10%;
-        right: 15%;
-        width: 100px;
-        height: 100px;
-        animation: float 10s infinite ease-in-out;
-    }
-    
-    @keyframes float {
-        0%, 100% {
-            transform: translateY(0) rotate(0deg);
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #D1E0D7;
+            color: #333;
+            overflow-x: hidden;
         }
-        50% {
-            transform: translateY(-20px) rotate(10deg);
+        
+        /* Left Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: linear-gradient(180deg, #607EBC 0%, #D1E0D7 100%);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: all 0.3s ease;
         }
-    }
-    
-    .dashboard-header h1 {
-        font-weight: 800;
-        letter-spacing: -0.5px;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1rem;
-        font-size: 2.5rem;
-    }
-    
-    .dashboard-header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        max-width: 600px;
-        margin-bottom: 1.5rem;
-    }
-    
-    .dashboard-header .breadcrumb {
-        background: rgba(255, 255, 255, 0.1);
-        display: inline-flex;
-        padding: 0.5rem 1.5rem;
-        border-radius: 50px;
-    }
-    
-    .dashboard-header .breadcrumb-item {
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 500;
-    }
-    
-    .dashboard-header .breadcrumb-item.active {
-        color: #fff;
-    }
-    
-    .dashboard-header .breadcrumb-item + .breadcrumb-item::before {
-        color: rgba(255, 255, 255, 0.6);
-    }
-</style>
-@endsection
+        
+        .sidebar-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        
+        .sidebar-brand-icon {
+            color: #fff;
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        
+        .sidebar-nav .nav-item {
+            position: relative;
+        }
+        
+        .sidebar .nav-link {
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 20px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-left-color: #D1E0D7;
+        }
+        
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-left-color: #D1E0D7;
+        }
+        
+        .sidebar .nav-link:hover i,
+        .sidebar .nav-link.active i {
+            transform: translateX(3px);
+        }
+        
+        .sidebar-user {
+            padding: 15px 20px;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .sidebar-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            color: #607EBC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .sidebar-user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .sidebar-user-name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sidebar-user-role {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+        }
+        
+        .sidebar-user-dropdown {
+            color: #fff;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-user-dropdown:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            margin-left: 250px;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            background: #D1E0D7;
+            padding-top: 20px;
+        }
+        
+        /* Mobile Navigation Toggle */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: #607EBC;
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
 
-@section('content')
-<!-- Navbar & Hero Start -->
-<div class="container-fluid nav-bar sticky-top px-4 py-2 py-lg-0">
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <a href="{{ url('/') }}" class="navbar-brand p-0">
-            <h1 class="display-6 text-dark"><i class="fas fa-calendar-alt text-primary me-3"></i>EventORG</h1>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="fa fa-bars"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav mx-auto py-0">
-                <a href="{{ url('/') }}" class="nav-item nav-link">Home</a>
-                <a href="{{ route('participant.dashboard') }}" class="nav-item nav-link {{ request()->routeIs('participant.dashboard') ? 'active' : '' }}">Dashboard</a>
-                <a href="{{ route('participant.events') }}" class="nav-item nav-link {{ request()->routeIs('participant.events') ? 'active' : '' }}">My Events</a>
-                <a href="{{ route('participant.tickets') }}" class="nav-item nav-link {{ request()->routeIs('participant.tickets') ? 'active' : '' }}">My Tickets</a>
-                <a href="{{ route('events.index') }}" class="nav-item nav-link">Browse Events</a>
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        
+        /* Dropdown Menu */
+        .dropdown-menu {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            padding: 1rem 0;
+            min-width: 200px;
+        }
+        
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            color: #555;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dropdown-item:hover {
+            color: #607EBC;
+            background-color: rgba(96, 126, 188, 0.1);
+        }
+        
+        .dropdown-item i {
+            margin-right: 0.5rem;
+            color: #607EBC;
+            width: 16px;
+        }
+        
+        /* Welcome section */
+        .welcome-section {
+            background-color: #fff;
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .welcome-heading {
+            color: #607EBC;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-subtext {
+            color: #555;
+            margin-bottom: 0;
+        }
+        
+        /* Profile Card */
+        .profile-header {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .profile-avatar-container {
+            position: relative;
+            margin-right: 30px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #607EBC 0%, #D1E0D7 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(96, 126, 188, 0.6);
+        }
+        
+        .profile-info {
+            flex-grow: 1;
+        }
+        
+        .profile-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #607EBC;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .profile-role {
+            color: #607EBC;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .events-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 15px;
+            background: rgba(209, 224, 215, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .events-badge i {
+            color: #607EBC;
+            margin-right: 8px;
+        }
+        
+        .events-count {
+            font-weight: 700;
+            color: #607EBC;
+        }
+        
+        .profile-actions {
+            display: flex;
+            margin-left: auto;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-actions {
+                margin-left: 0;
+                margin-top: 20px;
+                width: 100%;
+            }
+            
+            .profile-avatar-container {
+                margin-right: 20px;
+            }
+            
+            .profile-avatar {
+                width: 60px;
+                height: 60px;
+                font-size: 1.4rem;
+            }
+        }
+        
+        .btn-edit-profile {
+            padding: 10px 20px;
+            background: #607EBC;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn-edit-profile:hover {
+            background: #4a63a0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(96, 126, 188, 0.3);
+            color: white;
+        }
+        
+        .btn-edit-profile i {
+            margin-right: 8px;
+        }
+        
+        /* Statistics Cards Styling */
+        .stat-card {
+            border-radius: 16px;
+            overflow: hidden;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.8rem;
+        }
+        
+        .stat-primary {
+            background: linear-gradient(135deg, #607EBC 0%, #879FD4 100%);
+            color: #fff;
+        }
+        
+        .stat-success {
+            background: linear-gradient(135deg, #607EBC 0%, #D1E0D7 100%);
+            color: #fff;
+        }
+        
+        .stat-info {
+            background: linear-gradient(135deg, #607EBC 0%, #98AACF 100%);
+            color: #fff;
+        }
+        
+        .stat-warning {
+            background: linear-gradient(135deg, #607EBC 0%, #CCD9EC 100%);
+            color: #fff;
+        }
+        
+        .stat-content h6 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-link, .stat-info {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            color: inherit;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .stat-link:hover {
+            text-decoration: underline;
+            color: #fff;
+        }
+        
+        .stat-link i {
+            transition: transform 0.3s ease;
+            margin-left: 0.25rem;
+        }
+        
+        .stat-link:hover i {
+            transform: translateX(3px);
+        }
+        
+        .stat-icon {
+            font-size: 2.2rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            width: 60px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Event Cards */
+        .event-card {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            margin-bottom: 25px;
+            border: none;
+            background: white;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .event-image {
+            height: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .event-card:hover .event-image img {
+            transform: scale(1.05);
+        }
+        
+        .event-body {
+            padding: 20px;
+        }
+        
+        .event-date {
+            color: #607EBC;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .event-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #607EBC;
+        }
+        
+        .event-location {
+            color: #666;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .event-location i {
+            margin-right: 8px;
+            color: #607EBC;
+        }
+        
+        .event-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .event-price {
+            font-weight: 700;
+            color: #607EBC;
+        }
+        
+        .btn-view {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .section-title {
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+            color: #607EBC;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #607EBC;
+            border-radius: 10px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .stat-card {
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px 0;
+            }
+            
+            .profile-header {
+                padding: 20px;
+            }
+            
+            .stat-card-inner {
+                padding: 1.3rem;
+            }
+            
+            .stat-value {
+                font-size: 1.6rem;
+            }
+            
+            .stat-icon {
+                height: 50px;
+                width: 50px;
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle Button -->
+    <button class="menu-toggle" id="menuToggle">
+        <i data-feather="menu"></i>
+    </button>
+
+    <!-- Left Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-calendar-alt sidebar-brand-icon"></i>
+            <h1>EventORG</h1>
+        </div>
+        
+        <div class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="{{ url('/') }}" class="nav-link">
+                        <i data-feather="home"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('participant.dashboard') }}" class="nav-link {{ request()->routeIs('participant.dashboard') ? 'active' : '' }}">
+                        <i data-feather="grid"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('participant.events') }}" class="nav-link {{ request()->routeIs('participant.events') ? 'active' : '' }}">
+                        <i data-feather="calendar"></i> My Events
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('participant.tickets') }}" class="nav-link {{ request()->routeIs('participant.tickets') ? 'active' : '' }}">
+                        <i data-feather="ticket"></i> My Tickets
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('events.index') }}" class="nav-link">
+                        <i data-feather="search"></i> Browse Events
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="sidebar-user">
+            <div class="sidebar-user-avatar">da</div>
+            <div class="sidebar-user-info">
+                <div class="sidebar-user-name">dahhak</div>
+                <div class="sidebar-user-role">Participant</div>
             </div>
-            <div class="d-flex align-items-center">
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user"></i> {{ Auth::user()->name }}
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user-circle me-2"></i>My Profile</a></li>
-                        <li><a class="dropdown-item" href="{{ route('participant.tickets') }}"><i class="fas fa-ticket-alt me-2"></i>My Tickets</a></li>
-                        <li><a class="dropdown-item" href="{{ route('participant.events') }}"><i class="fas fa-calendar-alt me-2"></i>My Events</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
+            <div class="dropdown">
+                <a class="sidebar-user-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i data-feather="chevron-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{{ route('profile') }}"><i data-feather="user"></i> My Profile</a></li>
+                    <li><a class="dropdown-item" href="{{ route('participant.tickets') }}"><i data-feather="ticket"></i> My Tickets</a></li>
+                    <li><a class="dropdown-item" href="{{ route('participant.events') }}"><i data-feather="calendar"></i> My Events</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item"><i data-feather="log-out"></i> Logout</button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
-    </nav>
-</div>
-<!-- Navbar End -->
+    </div>
 
-<div class="container-fluid dashboard-section py-5">
-    <div class="container py-5">
-        <div class="row g-4">
-            <!-- Sidebar -->
-            <div class="col-lg-3">
-                <div class="dashboard-sidebar">
-                    <div class="user-profile">
-                        <div class="avatar-container">
-                            <div class="avatar">
-                                <i class="fas fa-user fa-3x" style="color: #fff; line-height: 92px;"></i>
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="container py-4">
+            <!-- Welcome Message -->
+            <div class="welcome-section">
+                <h2 class="welcome-heading">Welcome back, dahhak!</h2>
+                <p class="welcome-subtext">Here's what's happening with your events today.</p>
+            </div>
+            
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <div class="profile-avatar-container">
+                    <div class="profile-avatar">da</div>
+                </div>
+                <div class="profile-info">
+                    <h2 class="profile-name">dahhak</h2>
+                    <p class="profile-role">Participant</p>
+                    <div class="events-badge">
+                        <i data-feather="calendar"></i>
+                        <span class="events-count">5 événements</span>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <a href="{{ route('profile') }}" class="btn btn-edit-profile">
+                        <i data-feather="edit"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Dashboard Title -->
+            <h3 class="section-title">Mon Tableau de Bord</h3>
+            
+            <!-- Statistics Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-primary">
+                        <div class="stat-card-inner">
+                            <div class="stat-content">
+                                <h6>Mes Événements</h6>
+                                <h2 class="stat-value">5</h2>
+                                <a href="{{ route('participant.events') }}" class="stat-link">
+                                    Voir tous <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                            <div class="stat-icon">
+                                <i data-feather="calendar"></i>
                             </div>
                         </div>
-                        <h5 class="text-white mt-3">{{ Auth::user()->name }}</h5>
-                        <p class="text-white-50 mb-0">{{ Auth::user()->email }}</p>
                     </div>
-                    
-                    <div class="nav-wrapper">
-                        <a href="{{ route('participant.dashboard') }}" class="nav-link {{ request()->routeIs('participant.dashboard') ? 'active' : '' }}">
-                            <i class="fas fa-tachometer-alt"></i>
-                            Dashboard
-                        </a>
-                        
-                        <a href="{{ route('participant.events') }}" class="nav-link {{ request()->routeIs('participant.events') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-check"></i>
-                            My Events
-                        </a>
-                        
-                        <a href="{{ route('participant.tickets') }}" class="nav-link {{ request()->routeIs('participant.tickets') ? 'active' : '' }}">
-                            <i class="fas fa-ticket-alt"></i>
-                            My Tickets
-                        </a>
-                        
-                        <a href="{{ route('profile') }}" class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">
-                            <i class="fas fa-user-edit"></i>
-                            Edit Profile
-                        </a>
-                        
-                        <a href="{{ route('events.index') }}" class="find-events-btn">
-                            <i class="fas fa-search"></i>
-                            Find Events
-                        </a>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-success">
+                        <div class="stat-card-inner">
+                            <div class="stat-content">
+                                <h6>À Venir</h6>
+                                <h2 class="stat-value">3</h2>
+                                <span class="stat-info">Prochain dans 5 jours</span>
+                            </div>
+                            <div class="stat-icon">
+                                <i data-feather="clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-info">
+                        <div class="stat-card-inner">
+                            <div class="stat-content">
+                                <h6>Billets</h6>
+                                <h2 class="stat-value">5</h2>
+                                <a href="{{ route('participant.tickets') }}" class="stat-link">
+                                    Voir billets <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                            <div class="stat-icon">
+                                <i data-feather="ticket"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-warning">
+                        <div class="stat-card-inner">
+                            <div class="stat-content">
+                                <h6>Notifications</h6>
+                                <h2 class="stat-value">0</h2>
+                                <a href="#notifications" class="stat-link">
+                                    Voir notifications <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                            <div class="stat-icon">
+                                <i data-feather="bell"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                @if (request()->routeIs('participant.dashboard') || request()->routeIs('participant.events') || request()->routeIs('participant.tickets'))
-                <div class="dashboard-header mb-4">
-                    <div class="container">
-                        <div class="particle"></div>
-                        <div class="particle"></div>
-                        <div class="particle"></div>
-                        <h1 class="text-white">@yield('dashboard-title', 'Dashboard')</h1>
-                        <p class="text-white">Welcome to your personalized event management dashboard.</p>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('participant.dashboard') }}" class="text-white">Dashboard</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">@yield('dashboard-title', 'Overview')</li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-                @endif
-                
-                @yield('dashboard-content')
-            </div>
+            <!-- Dashboard Content -->
+            @yield('dashboard-content')
         </div>
     </div>
-</div>
-@endsection
 
-@section('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Animation for sidebar links
-    const navLinks = document.querySelectorAll('.dashboard-sidebar .nav-link');
-    navLinks.forEach((link, index) => {
-        link.style.opacity = '0';
-        link.style.transform = 'translateX(-10px)';
-        
-        setTimeout(() => {
-            link.style.transition = 'all 0.5s ease';
-            link.style.opacity = '1';
-            link.style.transform = 'translateX(0)';
-        }, 100 + (index * 100));
-    });
+    <!-- JavaScript Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('asset/lib/wow/wow.min.js') }}"></script>
+    <script src="{{ asset('asset/lib/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('asset/lib/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ asset('asset/lib/counterup/counterup.min.js') }}"></script>
+    <script src="{{ asset('asset/lib/lightbox/js/lightbox.min.js') }}"></script>
+    <script src="{{ asset('asset/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{{ asset('asset/js/main.js') }}"></script>
     
-    // Custom scrollbar initialization
-    // Add your scrollbar initialization here if needed
-});
-</script>
-@yield('dashboard-scripts')
-@endsection
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Feather Icons
+        feather.replace();
+        
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (menuToggle) {
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+        }
+        
+        // Animation for cards
+        const cards = document.querySelectorAll('.stat-card, .event-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 + (index * 100));
+        });
+    });
+    </script>
+    
+    @yield('scripts')
+</body>
+</html>

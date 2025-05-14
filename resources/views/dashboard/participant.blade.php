@@ -1,73 +1,10 @@
 @extends('layouts.participant')
 
-@section('dashboard-title', 'Mon Tableau de Bord')
+@section('title', 'Participant Dashboard - EventORG')
 
 @section('dashboard-content')
 <!-- Statistics Cards -->
-<div class="row g-4 dashboard-stats mb-5">
-    <div class="col-xl-3 col-md-6">
-        <div class="stat-card stat-primary">
-            <div class="stat-card-inner">
-                <div class="stat-content">
-                    <h6>Mes Événements</h6>
-                    <h2 class="stat-value">{{ $stats['totalRegistrations'] ?? 0 }}</h2>
-                    <a href="{{ route('participant.events') }}" class="stat-link">
-                        Voir tous <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="stat-card stat-success">
-            <div class="stat-card-inner">
-                <div class="stat-content">
-                    <h6>À Venir</h6>
-                    <h2 class="stat-value">{{ $stats['upcomingEvents'] ?? 0 }}</h2>
-                    <span class="stat-info">Prochain dans {{ $stats['daysToNextEvent'] ?? 0 }} jours</span>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-hourglass-half"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="stat-card stat-info">
-            <div class="stat-card-inner">
-                <div class="stat-content">
-                    <h6>Billets</h6>
-                    <h2 class="stat-value">{{ $stats['totalTickets'] ?? 0 }}</h2>
-                    <a href="{{ route('participant.tickets') }}" class="stat-link">
-                        Voir billets <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-ticket-alt"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="stat-card stat-warning">
-            <div class="stat-card-inner">
-                <div class="stat-content">
-                    <h6>Notifications</h6>
-                    <h2 class="stat-value">{{ $stats['totalNotifications'] ?? 0 }}</h2>
-                    <a href="#notifications" class="stat-link">
-                        Voir notifications <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                <div class="stat-icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Découverte d'événements avec Design Moderne -->
 <div class="content-card mb-5">

@@ -266,7 +266,7 @@
                                     @if(Auth::user()->isAdmin())
                                         <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
                                         <li><a class="dropdown-item" href="{{ route('admin.users') }}"><i class="fas fa-users me-2"></i>Users</a></li>
-                                        <li><a class="dropdown-item" href="{{ route('admin.events') }}"><i class="fas fa-calendar-alt me-2"></i>Events</a></li>
+                                        <li><a class="dropdown-item" href="{{ route('admin.events.index') }}"><i class="fas fa-calendar-alt me-2"></i>Events</a></li>
                                     @elseif(Auth::user()->isOrganizer())
                                         <li><a class="dropdown-item" href="{{ route('organizer.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
                                         <li><a class="dropdown-item" href="{{ route('organizer.events') }}"><i class="fas fa-calendar-alt me-2"></i>My Events</a></li>

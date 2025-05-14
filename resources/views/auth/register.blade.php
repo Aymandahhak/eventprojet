@@ -1,6 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 mb-5 hero-header">
+        <div class="container py-5">
+            <div class="row justify-content-center py-5">
+                <div class="col-lg-6 text-center text-lg-center">
+                    <h1 class="display-3 text-white mb-4 animated slideInDown">Create Account</h1>
+                    <p class="fs-5 text-white mb-4 animated slideInDown">Join our community and start exploring events today</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
