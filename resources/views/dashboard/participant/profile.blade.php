@@ -1,6 +1,6 @@
 @extends('layouts.participant')
 
-@section('dashboard-title', 'Mon Profil')
+@section('title', 'Mon Profil - EventORG')
 
 @section('dashboard-content')
 <div class="row g-4">
@@ -80,20 +80,24 @@
                 <h5>Changer le mot de passe</h5>
             </div>
             <div class="content-body">
+                @if(session('success'))
+                    <div class="alert-custom alert-success mb-4">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span>{{ session('success') }}</span>
+                        <button class="alert-close"><i class="fas fa-times"></i></button>
+                    </div>
+                @endif
+                
+                @if(session('error'))
+                    <div class="alert-custom alert-danger mb-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <span>{{ session('error') }}</span>
+                        <button class="alert-close"><i class="fas fa-times"></i></button>
+                    </div>
+                @endif
+                
                 <form action="{{ route('password.update') }}" method="POST">
                     @csrf
-                    
-                    <div class="row mb-4">
-                        <div class="col-lg-6">
-                            <div class="form-floating form-group-custom">
-                                <input type="password" class="form-control @error('current_password') is-invalid @enderror" id="current_password" name="current_password" placeholder="Mot de passe actuel">
-                                <label for="current_password">Mot de passe actuel</label>
-                                @error('current_password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
                     
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -107,8 +111,11 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating form-group-custom">
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirmer le nouveau mot de passe">
+                                <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" name="password_confirmation" placeholder="Confirmer le nouveau mot de passe">
                                 <label for="password_confirmation">Confirmer le nouveau mot de passe</label>
+                                @error('password_confirmation')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -196,6 +203,12 @@
     background: rgba(45, 206, 137, 0.1);
     color: #2dce89;
     border-left: 4px solid #2dce89;
+}
+
+.alert-danger {
+    background: rgba(241, 65, 65, 0.1);
+    color: #f14141;
+    border-left: 4px solid #f14141;
 }
 
 .alert-custom i {

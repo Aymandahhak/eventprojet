@@ -653,7 +653,7 @@
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('participant.tickets') }}" class="nav-link {{ request()->routeIs('participant.tickets') ? 'active' : '' }}">
-                        <i data-feather="ticket"></i> My Tickets
+                        <i class="fas fa-ticket-alt"></i> My Tickets
                     </a>
                 </li>
                 <li class="nav-item">
@@ -665,10 +665,10 @@
         </div>
         
         <div class="sidebar-user">
-            <div class="sidebar-user-avatar">da</div>
+            <div class="sidebar-user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</div>
             <div class="sidebar-user-info">
-                <div class="sidebar-user-name">dahhak</div>
-                <div class="sidebar-user-role">Participant</div>
+                <div class="sidebar-user-name">{{ Auth::user()->name }}</div>
+                <div class="sidebar-user-role">{{ ucfirst(Auth::user()->role) }}</div>
             </div>
             <div class="dropdown">
                 <a class="sidebar-user-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -695,21 +695,21 @@
         <div class="container py-4">
             <!-- Welcome Message -->
             <div class="welcome-section">
-                <h2 class="welcome-heading">Welcome back, dahhak!</h2>
-                <p class="welcome-subtext">Here's what's happening with your events today.</p>
+                <h2 class="welcome-heading">{{ __('Welcome back') }}, {{ Auth::user()->name }}!</h2>
+                <p class="welcome-subtext">{{ __('Here\'s what\'s happening with your events today.') }}</p>
             </div>
             
             <!-- Profile Header -->
             <div class="profile-header">
                 <div class="profile-avatar-container">
-                    <div class="profile-avatar">da</div>
+                    <div class="profile-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</div>
                 </div>
                 <div class="profile-info">
-                    <h2 class="profile-name">dahhak</h2>
-                    <p class="profile-role">Participant</p>
+                    <h2 class="profile-name">{{ Auth::user()->name }}</h2>
+                    <p class="profile-role">{{ ucfirst(Auth::user()->role) }}</p>
                     <div class="events-badge">
                         <i data-feather="calendar"></i>
-                        <span class="events-count">5 événements</span>
+                        <span class="events-count">{{ Auth::user()->registrations()->count() }} événements</span>
                     </div>
                 </div>
                 <div class="profile-actions">
@@ -720,7 +720,7 @@
             </div>
             
             <!-- Dashboard Title -->
-            <h3 class="section-title">Mon Tableau de Bord</h3>
+            <h3 class="section-title">{{ __('Mon Tableau de Bord') }}</h3>
             
             <!-- Statistics Cards -->
             <div class="row g-4 mb-5">

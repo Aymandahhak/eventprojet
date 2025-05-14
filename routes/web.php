@@ -12,6 +12,7 @@ use App\Http\Controllers\UserModifyController;
 use App\Http\Controllers\EventAdminController;
 use App\Http\Controllers\RegistrationadminController;
 use App\Http\Controllers\StatisticController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -78,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
     Route::put('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [UserController::class, 'updatePassword'])->name('password.update');
 
     // Event routes
     Route::get('/events', [EventController::class, 'index'])->name('events.index');

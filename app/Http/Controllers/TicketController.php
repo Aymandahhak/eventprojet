@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Registration;
 use Illuminate\Support\Facades\Auth;
-use PDF;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 class TicketController extends Controller
 {
@@ -34,12 +35,34 @@ class TicketController extends Controller
                 ->with('error', 'Vous n\'êtes pas autorisé à télécharger ce billet.');
         }
         
-        // For now, just return a view with the ticket information
-        // In a real application, you would generate a PDF here
-        return view('tickets.download', compact('registration'));
+        // Generate a unique ticket code if it doesn't exist
+        if (!$registration->ticket_code) {
+            $registration->ticket_code = strtoupper(substr(md5($registration->id . time()), 0, 8)) . '-' . $registration->id;
+            $registration->save();
+        }
         
-        // Example of PDF generation (requires laravel-dompdf or similar)
-        // $pdf = PDF::loadView('tickets.pdf', compact('registration'));
-        // return $pdf->download('ticket-' . $registration->id . '.pdf');
+        // Load the registration with the event and user data
+        $registration->load(['event', 'user']);
+        
+        // View the ticket in browser if preview parameter is present
+        if (request()->has('preview')) {
+            return view('tickets.download', compact('registration'));
+        }
+        
+        // Generate PDF with specific configuration
+        $pdf = PDF::loadView('tickets.pdf', compact('registration'));
+        
+        // Set PDF options
+        $pdf->setPaper('a4');
+        $pdf->setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'defaultFont' => 'dejavu sans',
+            'dpi' => 150,
+            'isPhpEnabled' => false
+        ]);
+        
+        // Return a downloadable PDF
+        return $pdf->download('billet-' . Str::slug($registration->event->title) . '-' . $registration->id . '.pdf');
     }
 } 

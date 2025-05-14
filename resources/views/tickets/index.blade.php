@@ -1,5 +1,7 @@
 @extends('layouts.participant')
 
+@section('title', 'Mes Billets - EventORG')
+
 @section('dashboard-title', 'Mes Billets')
 
 @section('dashboard-content')
@@ -83,9 +85,23 @@
                                         </a>
                                         
                                         @if($ticket->status == 'confirmed')
-                                        <a href="{{ route('participant.tickets.download', $ticket) }}" class="btn btn-sm btn-primary rounded-pill" title="Télécharger le billet">
-                                            <i class="fas fa-download"></i>
-                                        </a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-primary rounded-pill dropdown-toggle" type="button" id="ticketActions{{ $ticket->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ticket-alt"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ticketActions{{ $ticket->id }}">
+                                                <li>
+                                                    <a href="{{ route('participant.tickets.download', $ticket) }}" class="dropdown-item">
+                                                        <i class="fas fa-download me-2"></i> Télécharger PDF
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="{{ route('participant.tickets.download', ['registration' => $ticket, 'preview' => true]) }}" class="dropdown-item" target="_blank">
+                                                        <i class="fas fa-eye me-2"></i> Aperçu
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                         @endif
                                         
                                         @if($ticket->status != 'cancelled' && $ticket->event->start_date > now())

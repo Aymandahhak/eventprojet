@@ -1,0 +1,201 @@
+/* PDF Ticket Styling */
+body {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+}
+
+.ticket-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+    max-width: 800px;
+}
+
+.ticket-header {
+    background: #607EBC;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.event-logo {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.event-logo i {
+    font-size: 22px;
+    margin-right: 10px;
+}
+
+.event-title {
+    text-align: right;
+}
+
+.event-title h2 {
+    font-size: 22px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.event-date {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.event-date i {
+    margin-right: 8px;
+}
+
+.ticket-body {
+    padding: 20px;
+    position: relative;
+}
+
+.ticket-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.detail-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 3px;
+}
+
+.detail-value {
+    font-size: 16px;
+    color: #333;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+}
+
+.detail-value i {
+    margin-right: 10px;
+    color: #607EBC;
+}
+
+.status-confirmed,
+.payment-paid {
+    color: #28a745;
+}
+
+.status-pending,
+.payment-pending {
+    color: #ffc107;
+}
+
+.status-cancelled,
+.payment-failed {
+    color: #dc3545;
+}
+
+.detail-group.highlight {
+    background: #f0f3f8;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.ticket-code {
+    font-size: 18px;
+    font-weight: bold;
+    color: #607EBC;
+    letter-spacing: 1px;
+}
+
+.ticket-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.qr-code {
+    background: white;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.qr-text {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.ticket-footer {
+    padding: 15px 20px;
+    background: #f5f7fa;
+    border-top: 1px dashed #ddd;
+    font-size: 14px;
+    color: #666;
+}
+
+.ticket-date-issued {
+    color: #888;
+    font-size: 12px;
+}
+
+.organizer-info {
+    font-weight: bold;
+    color: #607EBC;
+}
+
+/* Grid system for PDF */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.col-md-7 {
+    width: 58.333333%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.col-md-5 {
+    width: 41.666667%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.col-md-8 {
+    width: 66.666667%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.col-md-4 {
+    width: 33.333333%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.text-md-end {
+    text-align: right;
+} 

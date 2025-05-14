@@ -110,4 +110,12 @@ class User extends Authenticatable
     {
         return ucfirst($this->role);
     }
+
+    /**
+     * Get the organizer profile for this user.
+     */
+    public function organizerProfile()
+    {
+        return $this->hasOne(OrganizerProfile::class);
+    }
 }
