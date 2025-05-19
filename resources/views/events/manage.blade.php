@@ -1,8 +1,31 @@
 @extends('layouts.organizer')
 
-@section('dashboard-title', 'Manage Events')
-
 @section('dashboard-content')
+<div class="content-card mb-5">
+    <div class="content-body no-padding">
+        @if(session('success'))
+            <div class="alert-custom alert-success mb-0 mx-4 mt-4">
+                <i class="fas fa-check-circle me-2"></i>
+                <span>{{ session('success') }}</span>
+                <button class="alert-close"><i class="fas fa-times"></i></button>
+            </div>
+        @endif
+        
+        @if(session('error'))
+            <div class="alert-custom alert-danger mb-0 mx-4 mt-4">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span>{{ session('error') }}</span>
+                <button class="alert-close"><i class="fas fa-times"></i></button>
+            </div>
+        @endif
+
+        <div class="d-flex justify-content-between align-items-center p-4">
+            <h5 class="mb-0">Manage Events</h5>
+            <a href="{{ route('organizer.events.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create New Event
+            </a>
+        </div>
+
 <!-- Top Action Bar -->
 <div class="card mb-4">
     <div class="card-body">
@@ -29,9 +52,6 @@
                         <li><a class="dropdown-item" href="{{ route('organizer.events', ['time' => 'past']) }}">Past Events</a></li>
                     </ul>
                 </div>
-                <a href="{{ route('events.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-1"></i>Create Event
-                </a>
             </div>
         </div>
     </div>
@@ -206,6 +226,8 @@
     </div>
     <div class="card-body">
         <canvas id="eventsPerformanceChart" style="height: 300px;"></canvas>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

@@ -156,11 +156,8 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/events/{event}', [OrganizerEventController::class, 'destroy'])->name('events.destroy');
         
         // Registration routes
-        Route::get('/registrations', [RegistrationController::class, 'organizerAllRegistrations'])->name('registrations.index');
-        Route::get('/registrations/{registration}', [RegistrationController::class, 'show'])->name('registrations.show');
-        Route::patch('/registrations/{registration}/confirm', [RegistrationController::class, 'confirm'])->name('registrations.confirm');
-        Route::patch('/registrations/{registration}/reject', [RegistrationController::class, 'reject'])->name('registrations.reject');
-        Route::get('/events/{event}/registrations', [RegistrationController::class, 'organizerRegistrations'])->name('event.registrations');
+        Route::get('/registrations', [App\Http\Controllers\Organizer\RegistrationController::class, 'index'])->name('registrations.index');
+        Route::delete('/registrations/{id}', [App\Http\Controllers\Organizer\RegistrationController::class, 'destroy'])->name('registrations.destroy');
         
         // Statistics route
         Route::get('/statistics', [StatisticController::class, 'organizerStatistics'])->name('statistics');
