@@ -110,9 +110,9 @@
                                 <i class="fas fa-tachometer-alt"></i> Dashboard
                             </a>
                             <a href="{{ route('organizer.events') }}" class="nav-link {{ request()->routeIs('organizer.events') ? 'active' : '' }}">
-                                <i class="fas fa-calendar-alt"></i> My Events
+                                <i class="fas fa-calendar-alt"></i> Events
                             </a>
-                            <a href="{{ route('organizer.registrations') }}" class="nav-link {{ request()->routeIs('organizer.registrations') ? 'active' : '' }}">
+                            <a href="{{ route('organizer.registrations.index') }}" class="nav-link {{ request()->routeIs('organizer.registrations.index') ? 'active' : '' }}">
                                 <i class="fas fa-ticket-alt"></i> Registrations
                             </a>
                             <a href="{{ route('organizer.statistics') }}" class="nav-link {{ request()->routeIs('organizer.statistics') ? 'active' : '' }}">

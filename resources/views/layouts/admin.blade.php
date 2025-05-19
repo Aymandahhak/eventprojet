@@ -107,7 +107,7 @@
 
 
                             
-                            <a href="{{ route('admin.settings') }}" class="nav-link {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
+                            <a href="{{ route('admin.settings.index') }}" class="nav-link {{ request()->routeIs('admin.settings.index') ? 'active' : '' }}">
                                 <i class="fas fa-cog"></i> Settings
                             </a>
                         </nav>

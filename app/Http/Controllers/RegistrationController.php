@@ -176,4 +176,57 @@ class RegistrationController extends Controller
 
         return back()->with('success', 'Registration status updated successfully.');
     }
+
+    public function organizerAllRegistrations()
+    {
+        $registrations = Registration::whereHas('event', function($query) {
+            $query->where('user_id', auth()->id());
+        })->with(['event', 'user'])->latest()->paginate(10);
+
+        return view('organizer.registrations.index', compact('registrations'));
+    }
+
+    /**
+     * Confirm a registration
+     */
+    public function confirm(Registration $registration)
+    {
+        // Check if the authenticated user is the organizer of the event
+        $this->authorize('update', $registration->event);
+
+        if ($registration->status !== 'pending') {
+            return back()->with('error', 'Cette inscription ne peut pas être confirmée.');
+        }
+
+        $registration->update([
+            'status' => 'confirmed'
+        ]);
+
+        // You might want to send an email to the user here
+        // Mail::to($registration->user->email)->send(new RegistrationConfirmed($registration));
+
+        return back()->with('success', 'Inscription confirmée avec succès.');
+    }
+
+    /**
+     * Reject a registration
+     */
+    public function reject(Registration $registration)
+    {
+        // Check if the authenticated user is the organizer of the event
+        $this->authorize('update', $registration->event);
+
+        if ($registration->status !== 'pending') {
+            return back()->with('error', 'Cette inscription ne peut pas être rejetée.');
+        }
+
+        $registration->update([
+            'status' => 'rejected'
+        ]);
+
+        // You might want to send an email to the user here
+        // Mail::to($registration->user->email)->send(new RegistrationRejected($registration));
+
+        return back()->with('success', 'Inscription rejetée.');
+    }
 } 

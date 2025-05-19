@@ -151,6 +151,10 @@ class DashboardController extends Controller
             return view('dashboard.participant.profile', [
                 'userType' => $user->role
             ]);
+        } elseif ($user->role === 'organizer') {
+            return view('organizer.profile', [
+                'userType' => $user->role
+            ]);
         } else {
             return view('dashboard.profile', [
                 'userType' => $user->role
@@ -165,12 +169,20 @@ class DashboardController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:255',
+            'current_password' => 'required_with:password|current_password',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
+
+        // Remove current_password from validated data since we don't want to store it
+        unset($validated['current_password']);
+        
+        // Only include password in the update if it was provided
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        }
 
         $user->update($validated);
 
-        return redirect()->route('profile')->with('success', 'Profile updated successfully');
+        return redirect()->back()->with('success', 'Profile updated successfully');
     }
 }
