@@ -33,24 +33,24 @@
         <style>
             /* Base & Color Styles */
             :root {
-                --primary-dark: #0a0f1f; /* Deeper base for background */
-                --primary-medium: #1c163c; /* Mid tone for background gradient */
-                --accent-start: #6c5b7b; /* Muted Purple */
-                --accent-end: #c06c84;   /* Muted Pink/Rose */
-                --accent-end-rgb: 192, 108, 132; /* RGB for box-shadow */
-                --accent-hover-start: #c06c84; /* Accent hover start */
-                --accent-hover-end: #6c5b7b;   /* Accent hover end */
-                --text-white: #ffffff;
-                --text-light: #f0f0f0; /* Brighter light gray for body */
-                --text-muted: #a0aec0;  /* Softer muted color for less important text */
-                --card-bg: rgba(28, 22, 60, 0.6); /* Semi-transparent card bg */
-                --border-color: rgba(255, 255, 255, 0.1);
+                --primary-dark: #070a13;
+                --primary-medium: #101624;
+                --accent-start: #3a3456;
+                --accent-end: #23243a;
+                --accent-end-rgb: 35, 36, 58;
+                --text-white: #f8f9fa;
+                --text-light: #cfd2da;
+                --text-muted: #7a7d8a;
+                --card-bg: rgba(16, 22, 36, 0.7);
+                --border-color: rgba(255, 255, 255, 0.07);
+                --footer-bg: var(--primary-dark);
+                --copyright-bg: #070b17;
             }
             
             body {
-                background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 100%);
+                background: var(--primary-dark);
                 color: var(--text-light);
-                font-family: 'Montserrat', sans-serif; /* Modern sans-serif */
+                font-family: 'Montserrat', sans-serif;
                 min-height: 100vh;
                 -webkit-font-smoothing: antialiased;
                 -moz-osx-font-smoothing: grayscale;
@@ -231,7 +231,7 @@
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                padding: 10px 20px;
+                padding: 10px 15px;
                 background: transparent;
                 color: #FFD074 !important;
                 font-weight: 600;
@@ -587,7 +587,7 @@
             /* Styles for .event-card are already covered by .card above */
             
             .footer, .service { /* .service is a section in current code */
-                background: var(--primary-dark); /* Solid dark for footer sections */
+                background: var(--footer-bg); /* Solid dark for footer sections */
                 padding-top: 60px;
                 padding-bottom: 0; /* Copyright has its own padding */
             }
@@ -606,7 +606,7 @@
             }
 
             .copyright {
-                background-color: #070b17; /* Even darker for copyright */
+                background-color: var(--copyright-bg); /* Even darker for copyright */
                 border-top: 1px solid var(--border-color);
                 padding: 25px 0;
                 font-size: 0.9rem;
@@ -1094,274 +1094,49 @@
             }
             
             /* Better button styling for event cards */
-            .event-card .btn {
+            .event-card .btn-group > a,
+            .event-card .btn-group > button,
+            .event-card .btn-group > form {
                 flex: 1;
-                text-align: center;
-                padding: 10px 15px;
-                font-size: 0.9rem;
-                white-space: nowrap;
-                border-radius: 50px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
             }
             
-            .event-card form {
+            .event-card .btn-group form {
+                display: flex;
                 flex: 1;
-                display: flex;
             }
             
-            .event-card form button {
+            .event-card .btn-group form button {
                 width: 100%;
             }
-            
-            /* Styled event card for a more modern look - matching the Capture.PNG */
-            .events-container .card {
-                border-radius: 10px;
-                overflow: hidden;
-                transition: all 0.3s ease;
-                height: 100%;
-                margin-bottom: 30px;
-            }
-            
-            .event-info {
+
+            /* Ensure consistent heights for the buttons */
+            .consistent-btn-view, .book-now-btn, .btn-success-custom {
+                height: 42px;
+                line-height: 1;
                 display: flex;
                 align-items: center;
-                margin-bottom: 8px;
-            }
-            
-            .event-info i {
-                width: 18px;
-                text-align: center;
-                margin-right: 8px;
-                color: var(--accent-start);
-            }
-            
-            .event-price {
-                font-weight: 700;
-                color: var(--accent-end);
-                font-size: 1.2rem;
-            }
-
-            /* SEARCH EVENTS form styling */
-            .search-events-container {
-                background-color: rgba(15, 23, 42, 0.7);
-                border-radius: 15px;
-                backdrop-filter: blur(10px);
-                padding: 25px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                width: 100%;
-                max-width: 450px;
-                position: relative;
-            }
-
-            .search-events-container h2 {
-                color: #fff;
-                margin-bottom: 20px;
-                font-weight: 700;
-                text-transform: uppercase;
-                font-size: 1.75rem;
-            }
-
-            /* Consistent Button Styling */
-            .consistent-btn {
-                display: inline-block;
-                padding: 10px 20px;
-                background: linear-gradient(90deg, #FFD074, #FAECC5);
-                color: #1d1d1f !important;
-                font-weight: 600;
-                border-radius: 50px;
-                text-decoration: none;
-                border: none;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-            }
-
-            .consistent-btn:hover {
-                background: linear-gradient(90deg, #FFD074, #FFBD45);
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(255, 208, 116, 0.4);
-            }
-
-            .consistent-btn i {
-                margin-right: 8px;
-            }
-
-            .consistent-btn-outline {
-                display: inline-block;
-                padding: 10px 20px;
-                background: transparent;
-                color: #FFD074 !important;
-                font-weight: 600;
-                border-radius: 50px;
-                text-decoration: none;
-                border: 1px solid #FFD074;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-            }
-
-            .consistent-btn-outline:hover {
-                background: rgba(255, 208, 116, 0.1);
-                color: #FAECC5 !important;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            }
-
-            .consistent-btn-outline i {
-                margin-right: 8px;
-            }
-
-            .btn-success-custom {
-                display: inline-block;
-                padding: 10px 20px;
-                background: #28a745;
-                color: white !important;
-                font-weight: 600;
-                border-radius: 50px;
-                text-decoration: none;
-                border: none;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-            }
-
-            .btn-success-custom:hover {
-                background: #218838;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-            }
-
-            .btn-success-custom i {
-                margin-right: 8px;
-            }
-
-            /* Add more consistent button styles */
-            .consistent-btn-primary {
-                display: inline-flex;
-                align-items: center;
                 justify-content: center;
-                padding: 10px 20px;
-                background: linear-gradient(90deg, #FFD074, #FAECC5);
-                color: #1d1d1f !important;
-                font-weight: 600;
-                border-radius: 50px;
-                text-decoration: none;
-                border: none;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                white-space: nowrap;
-                min-height: 40px;
-                line-height: 1.25rem;
-                width: 100%;
-            }
-
-            .consistent-btn-primary:hover {
-                background: linear-gradient(90deg, #FFD074, #FFBD45);
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(255, 208, 116, 0.4);
-            }
-
-            .consistent-btn-primary i {
-                margin-right: 8px;
             }
             
-            .consistent-btn-carousel {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 12px 25px;
-                background: linear-gradient(90deg, var(--accent-start) 0%, var(--accent-end) 100%);
-                color: var(--text-white) !important;
-                font-weight: 600;
-                border-radius: 50px;
-                text-decoration: none;
-                border: none;
-                box-shadow: 0 4px 15px rgba(192, 108, 132, 0.3);
-                transition: all 0.3s ease;
-                white-space: nowrap;
-                min-height: 48px;
-                line-height: 1.25rem;
-            }
-            
-            .consistent-btn-carousel:hover {
-                background: linear-gradient(90deg, var(--accent-hover-start) 0%, var(--accent-hover-end) 100%);
-                transform: translateY(-2px) scale(1.05);
-                box-shadow: 0 6px 20px rgba(192, 108, 132, 0.4);
-            }
-            
-            .consistent-btn-carousel-light {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 12px 25px;
-                background: rgba(255, 255, 255, 0.15);
-                color: var(--text-white) !important;
-                font-weight: 600;
-                border-radius: 50px;
-                text-decoration: none;
-                border: 1px solid rgba(255, 255, 255, 0.3);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                white-space: nowrap;
-                min-height: 48px;
-                line-height: 1.25rem;
-            }
-            
-            .consistent-btn-carousel-light:hover {
-                background: rgba(255, 255, 255, 0.25);
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-                border-color: rgba(255, 255, 255, 0.5);
-            }
-            
-            .consistent-btn-view-all {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 8px 16px;
-                background: transparent;
-                color: var(--accent-start) !important;
-                font-weight: 600;
-                border-radius: 50px;
-                text-decoration: none;
-                border: 1px solid var(--accent-start);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-                white-space: nowrap;
-                min-height: 36px;
-                line-height: 1.25rem;
-            }
-            
-            .consistent-btn-view-all:hover {
-                background: rgba(108, 91, 123, 0.1);
-                color: var(--accent-end) !important;
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-                border-color: var(--accent-end);
-            }
-            
-            .consistent-btn-view-all i {
-                margin-left: 8px;
-            }
-
-            /* Add book-now animated button style */
+            /* Fix for book-now-btn to have consistent width with other buttons */
             .book-now-btn {
-              background: transparent;
-              color: #fff;
-              font-size: 17px;
-              text-transform: uppercase;
-              font-weight: 600;
-              border: none;
-              padding: 20px 30px;
-              cursor: pointer;
-              perspective: 30rem;
-              position: relative;
-              border-radius: 10px;
-              box-shadow: 0 5px 15px rgba(0, 0, 0, 0.308);
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              width: 100%;
-              min-height: 40px;
+                flex: 1;
+                min-width: 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                background: transparent;
+                color: #fff;
+                font-size: 15px;
+                font-weight: 600;
+                border: none;
+                padding: 10px 15px;
+                cursor: pointer;
+                perspective: 30rem;
+                position: relative;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.308);
+                width: 100%;
             }
 
             .book-now-btn::before {
@@ -1550,7 +1325,7 @@
                 #c98f65 5%,
                 #3a2e20 14%,
                 #3a2e20 50%,
-                #f28e8e 60%,
+                #f28e8e,
                 #3a2e20 64%
               );
               transition: all 2s;
@@ -1633,7 +1408,7 @@
                 #c98f65 5%,
                 #000 38%,
                 #000 50%,
-                #f28e8e 60%,
+                #f28e8e,
                 #000 87%
               );
               transition: all 2s;
@@ -1709,6 +1484,41 @@
               100% {
                 transform: translate(-50%, -50%) rotate(450deg);
               }
+            }
+
+            .event-like-btn-wrapper {
+                position: absolute;
+                top: 12px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 10;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .like-btn {
+                background: linear-gradient(135deg, #23243a 60%, #3a3456 100%);
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                width: 44px;
+                height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+                transition: background 0.2s, box-shadow 0.2s;
+                font-size: 1.2rem;
+                cursor: pointer;
+                outline: none;
+            }
+            .like-btn.liked {
+                background: linear-gradient(135deg, #c06c84 60%, #6c5b7b 100%);
+                color: #fff;
+            }
+            .like-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
             }
         </style>
     </head>
@@ -2027,6 +1837,30 @@
                                 @if($event->image)
                                     <img class="card-img-top" src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
                                 @endif
+                                <!-- Like Button Center Top -->
+                                <div class="event-like-btn-wrapper">
+                                    @php
+                                        $user = auth()->user();
+                                        $isParticipant = $user && $event->registrations()->where('user_id', $user->id)->exists();
+                                        $hasLiked = $user && $user->likedEvents()->where('event_id', $event->id)->exists();
+                                    @endphp
+                                    <button
+                                        class="like-btn{{ $hasLiked ? ' liked' : '' }}"
+                                        data-event-id="{{ $event->id }}"
+                                        {!! !$user ? "onclick=\"window.location.href='".route('login')."'\" title=\"Login to like this event\"" : "" !!}
+                                        {!! $user && !$isParticipant ? "disabled title=\"You must participate in this event to like it\"" : "" !!}
+                                    >
+                                        <svg class="empty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                            <path fill="none" d="M0 0H24V24H0z"></path>
+                                            <path d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2zm-3.566 15.604c.881-.556 1.676-1.109 2.42-1.701C18.335 14.533 20 11.943 20 9c0-2.36-1.537-4-3.5-4-1.076 0-2.24.57-3.086 1.414L12 7.828l-1.414-1.414C9.74 5.57 8.576 5 7.5 5 5.56 5 4 6.656 4 9c0 2.944 1.666 5.533 4.645 7.903.745.592 1.54 1.145 2.421 1.7.299.189.595.37.934.572.339-.202.635-.383.934-.571z"></path>
+                                        </svg>
+                                        <svg class="filled" height="20" width="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0 0H24V24H0z" fill="none"></path>
+                                            <path d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <!-- Badges -->
                                 <div class="position-absolute top-0 start-0 m-3">
                                     <div class="badge bg-primary rounded-pill px-3 py-2">{{ $event->category }}</div>
                                 </div>
@@ -2035,21 +1869,6 @@
                                         {{ $event->type }}
                                     </div>
                                 </div>
-                                
-                                <!-- Like Button -->
-                                @auth
-                                <button class="like-btn @if(auth()->user()->likedEvents()->where('event_id', $event->id)->exists()) liked @endif" data-event-id="{{ $event->id }}">
-                                    <svg class="empty" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                                        <path fill="none" d="M0 0H24V24H0z"></path>
-                                        <path d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2zm-3.566 15.604c.881-.556 1.676-1.109 2.42-1.701C18.335 14.533 20 11.943 20 9c0-2.36-1.537-4-3.5-4-1.076 0-2.24.57-3.086 1.414L12 7.828l-1.414-1.414C9.74 5.57 8.576 5 7.5 5 5.56 5 4 6.656 4 9c0 2.944 1.666 5.533 4.645 7.903.745.592 1.54 1.145 2.421 1.7.299.189.595.37.934.572.339-.202.635-.383.934-.571z"></path>
-                                    </svg>
-                                    <svg class="filled" height="20" width="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M0 0H24V24H0z" fill="none"></path>
-                                        <path d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2z"></path>
-                                    </svg>
-                                    Like
-                                </button>
-                                @endauth
                             </div>
                             <div class="card-body p-4">
                                 <h5 class="card-title mb-3 text-truncate fw-bold">{{ $event->title }}</h5>
@@ -2093,7 +1912,7 @@
                                         @if(!$event->registrations()->where('user_id', auth()->id())->exists())
                                             <form action="{{ route('registrations.store', $event) }}" method="POST">
                                                 @csrf
-                                                <input type="submit" name="ticket_quantity" value="1">
+                                                <input type="hidden" name="ticket_quantity" value="1">
                                                 <button type="submit" class="book-now-btn">
                                                     <i class="fas fa-ticket-alt"></i>
                                                     <span>Book Now</span>
@@ -2184,7 +2003,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="d-grid gap-2">
+                                <div class="btn-group">
                                     <a href="{{ route('events.show', $event) }}" class="consistent-btn-view">
                                         <i class="fas fa-info-circle me-2"></i>View Details
                                     </a>
@@ -2199,7 +2018,7 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <button class="btn-success-custom w-100" disabled>
+                                            <button class="btn-success-custom" disabled>
                                                 <i class="fas fa-check-circle me-2"></i>Already Booked
                                             </button>
                                         @endif
@@ -2242,13 +2061,7 @@
                 </div>
                 <div class="row g-4 justify-content-center">
                     <!-- Opening Hours Info - Should be styled by .service-days CSS -->
-                    <div class="col-lg-8 col-md-10 wow fadeInUp" data-wow-delay="0.2s">
-                        <div class="service-days p-4">
-                            <div class="py-2 border-bottom border-top d-flex align-items-center justify-content-between flex-wrap"><h5 class="mb-0 pb-2 pb-sm-0 text-white">Monday - Friday</h5> <p class="mb-0 text-muted"><i class="fas fa-clock text-primary me-2"></i>9:00 AM - 6:00 PM</p></div>
-                            <div class="py-2 border-bottom d-flex align-items-center justify-content-between flex-shrink-1 flex-wrap"><h5 class="mb-0 pb-2 pb-sm-0 text-white">Saturday - Sunday</h5> <p class="mb-0 text-muted"><i class="fas fa-clock text-primary me-2"></i>10:00 AM - 4:00 PM</p></div>
-                            <div class="py-2 border-bottom d-flex align-items-center justify-content-between flex-shrink-1 flex-wrap"><h5 class="mb-0 text-white">Support Hours</h5> <p class="mb-0 text-muted"><i class="fas fa-clock text-primary me-2"></i>24/7 Online Support</p></div>
-                        </div>
-                    </div>
+                    
                 </div>
                 
                     <!-- Service Items -->

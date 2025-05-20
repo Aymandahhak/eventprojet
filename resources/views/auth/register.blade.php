@@ -21,10 +21,11 @@
 {{-- Registration Form Section --}}
 <div class="container py-5 wow fadeInUp" data-wow-delay="0.1s">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card auth-card p-4 p-md-5">
                 <div class="card-header text-center border-0 bg-transparent pt-4">
-                    <h3 class="mb-0 display-5 fw-bold text-white">Register</h3>
+                    <h3 class="mb-0 display-5 fw-bold text-white">Create Your Account</h3>
+                    <p class="text-muted mt-2">Join our platform to discover, create, and manage events seamlessly.</p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}">
@@ -73,7 +74,7 @@
                              <div class="d-flex align-items-center">
                                 <input type="checkbox" id="checkboxInput" name="is_organizer" {{ old('is_organizer') ? 'checked' : '' }}>
                                 <label for="checkboxInput" class="toggleSwitch me-3"></label>
-                                <label class="form-check-label text-light" for="checkboxInput">Are you an organizer?</label>
+                                <label class="form-check-label text-light" for="checkboxInput">Register as an event organizer</label>
                             </div>
                         </div>
 
@@ -90,9 +91,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        {{-- form-select should also be styled globally --}}
                                         <select id="organization_type" class="form-select @error('organization_type') is-invalid @enderror" name="organization_type">
-                                            <option value="" selected disabled>Select Type</option> {{-- Placeholder option --}}
+                                            <option value="" selected disabled>Select Type</option>
                                             <option value="Entreprise" {{ old('organization_type') == 'Entreprise' ? 'selected' : '' }}>Entreprise</option>
                                             <option value="Association" {{ old('organization_type') == 'Association' ? 'selected' : '' }}>Association</option>
                                             <option value="École" {{ old('organization_type') == 'École' ? 'selected' : '' }}>École</option>
@@ -136,19 +136,47 @@
 
 @push('styles')
 <style>
-    /* Styles for hero, card, forms, links should be inherited from login.blade.php's pushed styles or global styles */
-    /* Ensuring form-select is themed if not globally done */
-    .form-select {
-        background-color: rgba(255, 255, 255, 0.05); /* very subtle background */
+    /* Auth Card Styles */
+    .auth-card {
+        background-color: var(--card-bg, rgba(28, 22, 60, 0.6));
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+        border-radius: 15px;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Form Styles */
+    .form-control, .form-select {
+        background-color: rgba(255, 255, 255, 0.05); 
         color: var(--text-light, #f0f0f0);
         border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+        border-radius: 10px;
+        padding: 12px 15px;
     }
+    
+    .form-control::placeholder {
+        color: var(--text-muted, #a0aec0);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 0.25rem rgba(58, 52, 86, 0.5);
+        border-color: var(--accent-start, #3a3456);
+        color: var(--text-white, #ffffff);
+    }
+    
+    .form-select {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-light, #f0f0f0);
+    }
+    
     .form-select:focus {
-        border-color: var(--accent-start, #6c5b7b);
-        box-shadow: 0 0 0 0.25rem rgba(var(--accent-start-rgb, 108), var(--accent-start-rgb-g, 91), var(--accent-start-rgb-b, 123), 0.5);
+        border-color: var(--accent-start, #3a3456);
+        box-shadow: 0 0 0 0.25rem rgba(58, 52, 86, 0.5);
     }
+    
     .form-select option {
-        background-color: var(--primary-medium, #1c163c); /* Or a dark color for dropdown options */
+        background-color: var(--primary-medium, #101624);
         color: var(--text-light, #f0f0f0);
     }
 
@@ -188,7 +216,7 @@
     }
     /* Switch background change */
     #checkboxInput:checked+.toggleSwitch {
-      background-color: rgb(124, 173, 206);
+      background-color: var(--accent-start, #3a3456);
       transition-duration: .3s;
     }
 </style>

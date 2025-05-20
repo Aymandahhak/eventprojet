@@ -33,18 +33,18 @@
     <style>
         /* Base & Color Styles */
         :root {
-            --primary-dark: #0a0f1f; /* Deeper base for background */
-            --primary-medium: #1c163c; /* Mid tone for background gradient */
-            --accent-start: #6c5b7b; /* Muted Purple */
-            --accent-end: #c06c84;   /* Muted Pink/Rose */
-            --accent-end-rgb: 192, 108, 132; /* RGB for box-shadow */
-            --accent-hover-start: #c06c84; /* Accent hover start */
-            --accent-hover-end: #6c5b7b;   /* Accent hover end */
-            --text-white: #ffffff;
-            --text-light: #f0f0f0; /* Brighter light gray for body */
-            --text-muted: #a0aec0;  /* Softer muted color for less important text */
-            --card-bg: rgba(28, 22, 60, 0.6); /* Semi-transparent card bg */
-            --border-color: rgba(255, 255, 255, 0.1);
+            --primary-dark: #070a13;
+            --primary-medium: #101624;
+            --accent-start: #3a3456;
+            --accent-end: #23243a;
+            --accent-end-rgb: 35, 36, 58;
+            --text-white: #f8f9fa;
+            --text-light: #cfd2da;
+            --text-muted: #7a7d8a;
+            --card-bg: rgba(16, 22, 36, 0.7);
+            --border-color: rgba(255, 255, 255, 0.07);
+            --footer-bg: var(--primary-dark);
+            --copyright-bg: #070b17;
         }
         
         body {
@@ -289,6 +289,43 @@
             background-color: rgba(255, 255, 255, 0.1);
             color: var(--text-white);
         }
+
+        /* Footer Styles */
+        .footer {
+            background: var(--footer-bg);
+            padding-top: 60px;
+            padding-bottom: 0;
+        }
+
+        .footer h4 {
+            margin-bottom: 25px;
+            color: var(--text-white);
+        }
+
+        .footer p, .footer a {
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: var(--accent-start);
+        }
+
+        .copyright {
+            background-color: var(--copyright-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 25px 0;
+            font-size: 0.9rem;
+        }
+
+        .copyright a {
+            color: var(--accent-start);
+            font-weight: 500;
+        }
+
+        .copyright a:hover {
+            color: var(--accent-end);
+        }
     </style>
     
     @yield('styles')
@@ -372,7 +409,7 @@
             <div class="row g-5">
                 <div class="col-lg-4 col-md-6">
                     <h4 class="text-white mb-4">About Eventify</h4>
-                    <p class="mb-4 text-muted">Your premier platform for discovering, managing, and organizing events. Join our community of professionals and make your events a success.</p>
+                    <p class="mb-4">Your premier platform for discovering, managing, and organizing events. Join our community of professionals and make your events a success.</p>
                     <div class="d-flex pt-3 social-icons">
                         <a class="social-icon me-2" href=""><i class="fab fa-facebook-f"></i></a>
                         <a class="social-icon me-2" href=""><i class="fab fa-twitter"></i></a>
@@ -392,9 +429,9 @@
                 </div>
                 <div class="col-lg-4 col-md-6">
                     <h4 class="text-white mb-4">Contact Info</h4>
-                    <p class="mb-2 text-muted"><i class="fas fa-map-marker-alt text-primary me-3"></i>123 Event Street, City, Country</p>
-                    <p class="mb-2 text-muted"><i class="fas fa-phone-alt text-primary me-3"></i>+012 345 67890</p>
-                    <p class="mb-2 text-muted"><i class="fas fa-envelope text-primary me-3"></i>info@eventify.com</p>
+                    <p class="mb-2"><i class="fas fa-map-marker-alt text-primary me-3"></i>123 Event Street, City, Country</p>
+                    <p class="mb-2"><i class="fas fa-phone-alt text-primary me-3"></i>+012 345 67890</p>
+                    <p class="mb-2"><i class="fas fa-envelope text-primary me-3"></i>info@eventify.com</p>
                 </div>
             </div>
         </div>
