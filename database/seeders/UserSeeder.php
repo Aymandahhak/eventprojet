@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Organizer User',
                 'password' => Hash::make('organizer123'),
-                'role' => 'organizer'
+                'role' => 'organisateur'
             ]
         );
 

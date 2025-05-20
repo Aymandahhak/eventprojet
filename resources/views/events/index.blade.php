@@ -4,13 +4,14 @@
 <style>
     .event-card {
         transition: all 0.3s ease;
-        border-radius: 10px;
+        border-radius: 15px;
         overflow: hidden;
     }
     
     .event-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 15px 35px rgba(var(--accent-end-rgb), 0.25) !important;
+        border-color: var(--accent-end);
     }
     
     .card-img-top {
@@ -27,29 +28,122 @@
     .event-card .card-title {
         font-size: 1.25rem;
         line-height: 1.4;
+        color: var(--text-white);
     }
     
     .event-card .card-text {
-        color: #6c757d;
+        color: var(--text-muted);
         font-size: 0.9rem;
         line-height: 1.5;
+    }
+
+    .event-filter {
+        background: var(--card-bg);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+    }
+
+    .event-filter .form-label {
+        color: var(--text-white);
+        font-weight: 500;
+    }
+
+    .section-title {
+        position: relative;
+        margin-bottom: 3rem;
+        padding-bottom: 1rem;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
+    }
+
+    .page-header {
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+        background-color: rgba(10, 15, 31, 0.5);
+        backdrop-filter: blur(5px);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .event-search-input {
+        border-radius: 30px;
+        padding-left: 1.2rem;
+    }
+    
+    .event-search-button {
+        border-radius: 0 30px 30px 0;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
     }
 </style>
 @endsection
 
 @section('content')
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 class="display-5 mb-3">Discover Events</h1>
+                <p class="text-muted">Browse upcoming events and join the ones that interest you.</p>
+            </div>
+            @can('manage-events')
+            <div class="col-lg-4 d-flex align-items-center justify-content-lg-end mt-3 mt-lg-0">
+                <a href="{{ route('events.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i> Create Event
+                </a>
+            </div>
+            @endcan
+        </div>
+    </div>
+</div>
+
 <div class="container py-4">
-    <div class="row mb-4">
-        <div class="col">
-            <h1 class="h3">Upcoming Events</h1>
-        </div>
-        @can('manage-events')
-        <div class="col text-end">
-            <a href="{{ route('events.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Create Event
-            </a>
-        </div>
-        @endcan
+    <!-- Event Filter -->
+    <div class="event-filter wow fadeInUp" data-wow-delay="0.1s">
+        <form action="{{ route('events.search') }}" method="GET">
+            <div class="row g-3">
+                <div class="col-lg-5 col-md-5">
+                    <div class="input-group">
+                        <input type="text" class="form-control event-search-input" placeholder="Search events..." name="keyword" value="{{ request()->keyword ?? '' }}">
+                        <button class="btn btn-primary event-search-button" type="submit"><i class="fas fa-search me-1"></i> Search</button>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <select name="type" class="form-select">
+                        <option value="">All Categories</option>
+                        <option value="Conference" {{ request()->type == 'Conference' ? 'selected' : '' }}>Conference</option>
+                        <option value="Workshop" {{ request()->type == 'Workshop' ? 'selected' : '' }}>Workshop</option>
+                        <option value="Seminar" {{ request()->type == 'Seminar' ? 'selected' : '' }}>Seminar</option>
+                        <option value="Networking" {{ request()->type == 'Networking' ? 'selected' : '' }}>Networking</option>
+                        <option value="Training" {{ request()->type == 'Training' ? 'selected' : '' }}>Training</option>
+                        <option value="Exhibition" {{ request()->type == 'Exhibition' ? 'selected' : '' }}>Exhibition</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <input type="date" class="form-control" name="date" value="{{ request()->date ?? '' }}" placeholder="Select Date">
+                </div>
+                <div class="col-lg-1 col-md-1">
+                    <a href="{{ route('events.index') }}" class="btn btn-outline-primary d-flex align-items-center justify-content-center">
+                        <i class="fas fa-sync-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Event Results -->
+    <div class="section-title wow fadeInUp" data-wow-delay="0.2s">
+        <h2 class="text-white">Upcoming Events</h2>
     </div>
 
     <div class="row g-4">
@@ -74,20 +168,20 @@
                     
                     <div class="d-flex align-items-center mb-3">
                         <i class="far fa-calendar-alt text-primary me-2"></i>
-                        <small>{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }}</small>
+                        <small class="text-muted">{{ \Carbon\Carbon::parse($event->start_date)->format('M d, Y') }}</small>
                     </div>
                     
                     <div class="d-flex align-items-center mb-3">
                         <i class="far fa-clock text-primary me-2"></i>
-                        <small>{{ \Carbon\Carbon::parse($event->start_date)->format('h:i A') }}</small>
+                        <small class="text-muted">{{ \Carbon\Carbon::parse($event->start_date)->format('h:i A') }}</small>
                     </div>
                     
                     <div class="d-flex align-items-center mb-3">
                         <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                        <small class="text-truncate">{{ $event->location }}</small>
+                        <small class="text-muted text-truncate">{{ $event->location }}</small>
                     </div>
                     
-                    <div class="mb-3 border-top pt-3">
+                    <div class="mb-3 border-top pt-3 border-color">
                         <p class="card-text mb-3" style="min-height: 60px;">
                             {{ \Illuminate\Support\Str::limit($event->description, 100) }}
                         </p>
@@ -95,7 +189,7 @@
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div>
                                 <i class="fas fa-users text-primary me-1"></i>
-                                <small>{{ $event->registrations->count() }}/{{ $event->capacity }} participants</small>
+                                <small class="text-muted">{{ $event->registrations->count() }}/{{ $event->capacity }} participants</small>
                             </div>
                             <div>
                                 <small class="text-primary fw-bold">${{ number_format($event->price, 2) }}</small>
@@ -132,8 +226,9 @@
         </div>
         @empty
         <div class="col">
-            <div class="alert alert-info">
-                No events found.
+            <div class="alert bg-light border-0">
+                <i class="fas fa-info-circle me-2 text-primary"></i>
+                No events found matching your criteria. Try adjusting your search or check back later.
             </div>
         </div>
         @endforelse
@@ -144,3 +239,10 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Initialize WOW.js for animations
+    new WOW().init();
+</script>
+@endpush

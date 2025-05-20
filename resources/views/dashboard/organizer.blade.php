@@ -24,6 +24,49 @@
     </div>
 </div>
 
+<!-- Quick Actions Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <a href="{{ route('organizer.registrations.index') }}" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="btn btn-success rounded-circle mb-3">
+                        <i class="fas fa-ticket-alt fa-2x"></i>
+                    </div>
+                    <h5>Manage Registrations</h5>
+                    <p class="text-muted mb-0">View and manage event registrations</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{{ route('organizer.statistics') }}" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="btn btn-info rounded-circle mb-3">
+                        <i class="fas fa-chart-bar fa-2x"></i>
+                    </div>
+                    <h5>View Statistics</h5>
+                    <p class="text-muted mb-0">Analyze your events performance</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{{ route('events.create') }}" class="text-decoration-none">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center py-4">
+                    <div class="btn btn-primary rounded-circle mb-3">
+                        <i class="fas fa-plus fa-2x"></i>
+                    </div>
+                    <h5>Create Event</h5>
+                    <p class="text-muted mb-0">Create a new event</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
 <!-- Statistics Cards Row -->
 <div class="row g-4 mb-4">
     <!-- Total Events Card -->

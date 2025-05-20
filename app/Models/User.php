@@ -75,6 +75,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the events the user has liked.
+     */
+    public function likedEvents()
+    {
+        return $this->belongsToMany(Event::class, 'event_likes')
+            ->withTimestamps();
+    }
+
+    /**
      * Get the notifications for the user.
      */
     public function notifications()
@@ -95,7 +104,7 @@ class User extends Authenticatable
      */
     public function isOrganizer()
     {
-        return $this->role === 'organizer';
+        return $this->role === 'organisateur';
     }
 
     /**

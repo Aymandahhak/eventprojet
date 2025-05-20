@@ -67,6 +67,15 @@ class Event extends Model
             ->withTimestamps();
     }
 
+    /**
+     * Obtenir les utilisateurs qui ont aimé cet événement.
+     */
+    public function likes()
+    {
+        return $this->belongsToMany(User::class, 'event_likes')
+            ->withTimestamps();
+    }
+
     public function getRemainingCapacityAttribute()
     {
         return $this->capacity - $this->registrations()->where('status', 'confirmed')->count();

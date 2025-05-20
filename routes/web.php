@@ -15,6 +15,8 @@ use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\SettingAdminController;
 use App\Http\Controllers\Organizer\EventController as OrganizerEventController;
+use App\Http\Controllers\EventLikeController;
+use App\Http\Controllers\NotificationController;
 
 
 
@@ -93,6 +95,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
         Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
     });
+    
+    // Event like route
+    Route::post('/events/{event}/like', [EventLikeController::class, 'toggle'])->name('events.like');
 
     // Registration routes
     Route::post('/events/{event}/register', [RegistrationController::class, 'store'])->name('registrations.store');
@@ -174,6 +179,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tickets/{registration}/download', [App\Http\Controllers\TicketController::class, 'download'])->name('tickets.download');
         Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
         Route::put('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+        Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+        Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
     });
 });
 

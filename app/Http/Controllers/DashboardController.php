@@ -15,7 +15,7 @@ class DashboardController extends Controller
         
         if ($user->role === 'admin') {
             return view('dashboard.admin');
-        } elseif ($user->role === 'organizer') {
+        } elseif ($user->role === 'organisateur') {
             return view('dashboard.organizer');
         } else {
             return view('dashboard.participant');
@@ -65,18 +65,48 @@ class DashboardController extends Controller
     public function organizer()
     {
         $user = auth()->user();
+        $organizerProfile = $user->organizerProfile;
+        
+        // Get upcoming events
+        $upcomingEvents = $user->organizedEvents()
+            ->where('start_date', '>', now())
+            ->orderBy('start_date', 'asc')
+            ->take(5)
+            ->get();
+            
+        // Get recent registrations across all events
+        $eventIds = $user->organizedEvents()->pluck('id');
+        $recentRegistrations = Registration::whereIn('event_id', $eventIds)
+            ->with(['event', 'user'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+            
+        // Calculate statistics
         $stats = [
             'totalEvents' => $user->organizedEvents()->count(),
-            'totalParticipants' => Registration::whereIn('event_id', $user->organizedEvents()->pluck('id'))->count(),
+            'totalParticipants' => Registration::whereIn('event_id', $eventIds)->count(),
             'upcomingEvents' => $user->organizedEvents()->where('start_date', '>', now())->count(),
-            'totalRevenue' => Registration::whereIn('event_id', $user->organizedEvents()->pluck('id'))->sum('total_price'),
-            'newEventsPercent' => 25,
-            'newParticipantsPercent' => 15,
-            'revenueGrowthPercent' => 32,
-            'daysToNextEvent' => 5
+            'totalRevenue' => Registration::whereIn('event_id', $eventIds)->sum('total_price'),
+            'newEventsPercent' => 15, // Placeholder values
+            'newParticipantsPercent' => 10, // Placeholder values
+            'revenueGrowthPercent' => 20, // Placeholder values
+            'daysToNextEvent' => $upcomingEvents->first() ? now()->diffInDays($upcomingEvents->first()->start_date) : 0
         ];
+        
+        return view('dashboard.organizer', [
+            'user' => $user,
+            'profile' => $organizerProfile,
+            'upcomingEvents' => $upcomingEvents,
+            'recentRegistrations' => $recentRegistrations,
+            'stats' => $stats
+        ]);
+    }
 
-        return view('dashboard.organizer', compact('stats'));
+    public function organizerProfile()
+    {
+        // Redirect to the organizer dashboard instead
+        return redirect()->route('organizer.dashboard');
     }
 
     public function participant()
@@ -147,7 +177,9 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
-        if ($user->role === 'participant') {
+        if ($user->role === 'organisateur') {
+            return $this->organizerProfile();
+        } elseif ($user->role === 'participant') {
             return view('dashboard.participant.profile', [
                 'userType' => $user->role
             ]);
@@ -184,5 +216,46 @@ class DashboardController extends Controller
         $user->update($validated);
 
         return redirect()->back()->with('success', 'Profile updated successfully');
+    }
+
+    public function updateOrganizerProfile(Request $request)
+    {
+        $user = auth()->user();
+        $organizerProfile = $user->organizerProfile;
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'required|string|max:20',
+            'organization_name' => 'required|string|max:255',
+            'organization_type' => 'required|string|max:255',
+            'organization_description' => 'nullable|string',
+            'website' => 'nullable|url|max:255',
+            'social_media' => 'nullable|string|max:255',
+        ]);
+
+        // Update user information
+        $user->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+        ]);
+
+        // Update organizer profile
+        $organizerProfile->update([
+            'organization_name' => $validated['organization_name'],
+            'organization_type' => $validated['organization_type'],
+            'organization_description' => $validated['organization_description'],
+            'website' => $validated['website'],
+            'social_media' => $validated['social_media'],
+        ]);
+
+        // Handle logo upload if provided
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('organizer-logos', 'public');
+            $organizerProfile->update(['logo' => $logoPath]);
+        }
+
+        return redirect()->route('organizer.dashboard')->with('success', 'Profile updated successfully');
     }
 }

@@ -1,63 +1,147 @@
 @extends('layouts.participant')
 
-@section('title', 'Participant Dashboard - EventORG')
+@section('title', 'Participant Dashboard - Eventify')
 
 @section('dashboard-content')
-<!-- Statistics Cards -->
 
-
-<!-- Découverte d'événements avec Design Moderne -->
-<div class="content-card mb-5">
-    <div class="content-header">
-        <h5>Découverte d'événements</h5>
-        <a href="{{ route('events.index') }}" class="btn btn-outline">Voir tous les événements</a>
-    </div>
-    <div class="content-body">
-        <div class="events-grid">
-            @forelse($recommendedEvents ?? [] as $event)
-            <div class="event-card">
-                <div class="event-image">
-                    @if($event->image)
-                        <img src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}">
-                    @else
-                        <div class="placeholder-image">
-                            <i class="fas fa-calendar-day"></i>
-                        </div>
-                    @endif
-                    <div class="event-badges">
-                        <span class="badge badge-primary">{{ $event->category }}</span>
-                        <span class="badge badge-dark">{{ $event->type }}</span>
+{{-- Statistics Cards --}}
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon bg-purple-soft rounded-circle me-3">
+                        <i class="fas fa-calendar-alt text-purple"></i>
+                    </div>
+                    <div>
+                        <h6 class="small text-uppercase mb-1">Upcoming Events</h6>
+                        <h3 class="fw-bold mb-0">{{ $stats['upcoming_events_count'] ?? 0 }}</h3>
                     </div>
                 </div>
-                <div class="event-details">
-                    <h5 class="event-title">{{ $event->title }}</h5>
-                    <div class="event-info">
-                        <div class="info-item">
-                            <i class="far fa-calendar-alt"></i>
-                            <span>{{ \Carbon\Carbon::parse($event->start_date)->format('d/m/Y') }}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>{{ $event->location }}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-users"></i>
-                            <span>{{ $event->registrations->count() }}/{{ $event->capacity }}</span>
+                <div class="progress progress-sm bg-purple-soft">
+                    <div class="progress-bar bg-purple" style="width: {{ min(($stats['upcoming_events_count'] ?? 0) * 10, 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon bg-success-soft rounded-circle me-3">
+                        <i class="fas fa-ticket-alt text-success"></i>
+                    </div>
+                    <div>
+                        <h6 class="small text-uppercase mb-1">My Tickets</h6>
+                        <h3 class="fw-bold mb-0">{{ $stats['tickets_count'] ?? 0 }}</h3>
+                    </div>
+                </div>
+                <div class="progress progress-sm bg-success-soft">
+                    <div class="progress-bar bg-success" style="width: {{ min(($stats['tickets_count'] ?? 0) * 10, 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon bg-info-soft rounded-circle me-3">
+                        <i class="fas fa-check-circle text-info"></i>
+                    </div>
+                    <div>
+                        <h6 class="small text-uppercase mb-1">Attended Events</h6>
+                        <h3 class="fw-bold mb-0">{{ $stats['past_events_count'] ?? 0 }}</h3>
+                    </div>
+                </div>
+                <div class="progress progress-sm bg-info-soft">
+                    <div class="progress-bar bg-info" style="width: {{ min(($stats['past_events_count'] ?? 0) * 10, 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon bg-warning-soft rounded-circle me-3">
+                        <i class="fas fa-bell text-warning"></i>
+                    </div>
+                    <div>
+                        <h6 class="small text-uppercase mb-1">Notifications</h6>
+                        <h3 class="fw-bold mb-0">{{ $stats['notifications_count'] ?? 0 }}</h3>
+                    </div>
+                </div>
+                <div class="progress progress-sm bg-warning-soft">
+                    <div class="progress-bar bg-warning" style="width: {{ min(($stats['notifications_count'] ?? 0) * 20, 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Découverte d'événements -->
+<div class="card content-card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+            <i class="fas fa-compass me-2 text-purple"></i> Découverte d'événements
+        </h5>
+        <a href="{{ route('events.index') }}" class="btn btn-sm btn-outline-purple">
+            Voir tous <i class="fas fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="row g-4">
+            @forelse($recommendedEvents ?? [] as $event)
+            <div class="col-lg-4 col-md-6">
+                <div class="event-card h-100">
+                    <div class="event-image position-relative">
+                        @if($event->image)
+                            <img src="{{ asset('asset/img/' . $event->image) }}" alt="{{ $event->title }}" class="event-img">
+                        @else
+                            <div class="event-img-placeholder">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                        @endif
+                        <div class="event-badges">
+                            <span class="badge bg-purple-soft text-purple">{{ $event->category }}</span>
+                            <span class="badge bg-dark-soft text-light">{{ $event->type }}</span>
                         </div>
                     </div>
-                    <div class="event-footer">
-                        <div class="event-price">{{ number_format($event->price, 2) }} €</div>
-                        <a href="{{ route('events.show', $event) }}" class="btn btn-primary">Voir détails</a>
+                    <div class="event-content">
+                        <h5 class="event-title">{{ $event->title }}</h5>
+                        <div class="event-info">
+                            <div class="event-info-item">
+                                <i class="fas fa-calendar-alt text-purple"></i>
+                                {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y') }}
+                            </div>
+                            <div class="event-info-item">
+                                <i class="fas fa-map-marker-alt text-purple"></i>
+                                {{ Str::limit($event->location, 30) }}
+                            </div>
+                            <div class="event-info-item">
+                                <i class="fas fa-users text-purple"></i>
+                                {{ $event->registrations->count() }}/{{ $event->capacity }} Participants
+                            </div>
+                        </div>
+                        <div class="event-footer">
+                            <span class="event-price">{{ number_format($event->price, 2) }} €</span>
+                            <a href="{{ route('events.show', $event) }}" class="btn btn-sm btn-gradient">
+                                Détails <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             @empty
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-search"></i>
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="fas fa-search fa-3x text-purple mb-3"></i>
+                    <p class="mb-3">Aucun événement recommandé trouvé pour le moment.</p>
+                    <a href="{{ route('events.index') }}" class="btn btn-gradient">
+                        <i class="fas fa-compass me-2"></i> Parcourir les événements
+                    </a>
                 </div>
-                <p>Aucun événement recommandé trouvé</p>
-                <a href="{{ route('events.index') }}" class="btn btn-primary">Parcourir tous les événements</a>
             </div>
             @endforelse
         </div>
@@ -65,826 +149,607 @@
 </div>
 
 <!-- Historique des inscriptions -->
-<div class="content-card mb-5">
-    <div class="content-header">
-        <h5>Historique des inscriptions</h5>
-        <a href="{{ route('participant.events') }}" class="btn btn-outline">Voir tout</a>
+<div class="card content-card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-history text-purple me-2"></i>
+            <h5 class="card-title mb-0">Historique des inscriptions</h5>
+        </div>
+        <a href="{{ route('participant.events') }}" class="btn btn-sm btn-outline-purple">
+            Voir tout <i class="fas fa-arrow-right ms-1"></i>
+        </a>
     </div>
-    <div class="content-body no-padding">
-        <div class="registration-history">
+    <div class="card-body p-0">
+        <div class="list-group registration-list">
             @forelse($upcomingEvents ?? [] as $registration)
-            <div class="registration-item">
-                <div class="registration-image">
-                    @if($registration->event->image)
-                        <img src="{{ asset('asset/img/' . $registration->event->image) }}" alt="{{ $registration->event->title }}">
-                    @else
-                        <div class="placeholder-image">
-                            <i class="fas fa-calendar-day"></i>
-                        </div>
-                    @endif
-                </div>
-                <div class="registration-info">
-                    <h5>{{ $registration->event->title }}</h5>
-                    <div class="info-row">
-                        <div class="info-item">
-                            <i class="far fa-calendar-alt"></i>
-                            <span>{{ \Carbon\Carbon::parse($registration->event->start_date)->format('d/m/Y') }} à {{ \Carbon\Carbon::parse($registration->event->start_date)->format('H:i') }}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>{{ $registration->event->location }}</span>
+            <div class="list-group-item registration-item">
+                <div class="row align-items-center g-3">
+                    <div class="col-auto">
+                        <div class="registration-image">
+                            @if($registration->event->image)
+                                <img src="{{ asset('asset/img/' . $registration->event->image) }}" alt="{{ $registration->event->title }}">
+                            @else
+                                <div class="registration-img-placeholder">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
+                            @endif
                         </div>
                     </div>
-                    <div class="status-badges">
-                        <span class="badge status-{{ $registration->status }}">
-                            {{ ucfirst($registration->status) }}
-                        </span>
-                        <span class="badge payment-{{ $registration->payment_status }}">
-                            {{ ucfirst($registration->payment_status) }}
-                        </span>
+                    <div class="col registration-info">
+                        <h6 class="registration-title">{{ $registration->event->title }}</h6>
+                        <div class="registration-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-calendar-alt text-purple"></i>
+                                {{ \Carbon\Carbon::parse($registration->event->start_date)->format('d M Y, H:i') }}
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-map-marker-alt text-purple"></i>
+                                {{ Str::limit($registration->event->location, 40) }}
+                            </div>
+                        </div>
+                        <div class="registration-status">
+                            <span class="badge rounded-pill {{ 
+                                ($registration->status == 'confirmed') ? 'bg-success-soft text-success' : 
+                                (($registration->status == 'pending') ? 'bg-warning-soft text-warning' : 
+                                (($registration->status == 'cancelled') ? 'bg-danger-soft text-danger' : 'bg-secondary-soft text-light')) 
+                            }}">{{ ucfirst($registration->status) }}</span>
+                            <span class="badge rounded-pill {{ 
+                                ($registration->payment_status == 'paid') ? 'bg-success-soft text-success' : 
+                                (($registration->payment_status == 'pending') ? 'bg-warning-soft text-warning' : 
+                                (($registration->payment_status == 'refunded') ? 'bg-info-soft text-info' : 'bg-secondary-soft text-light')) 
+                            }}">{{ ucfirst($registration->payment_status) }}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="registration-actions">
-                    <a href="{{ route('events.show', $registration->event) }}" class="btn btn-outline btn-sm">
-                        <i class="fas fa-info-circle"></i> Détails
-                    </a>
-                    <a href="{{ route('participant.tickets.download', $registration) }}" class="btn btn-primary btn-sm">
-                        <i class="fas fa-download"></i> Télécharger Billet
-                    </a>
+                    <div class="col-md-auto">
+                        <div class="registration-actions">
+                            <a href="{{ route('events.show', $registration->event) }}" class="btn btn-sm btn-outline-light">
+                                <i class="fas fa-info-circle me-1"></i> Détails
+                            </a>
+                            @if($registration->status == 'confirmed' && $registration->payment_status == 'paid')
+                            <a href="{{ route('participant.tickets.download', $registration) }}" class="btn btn-sm btn-gradient">
+                                <i class="fas fa-download me-1"></i> Billet
+                            </a>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
             @empty
             <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-calendar-times"></i>
-                </div>
-                <p>Vous n'êtes inscrit à aucun événement</p>
-                <a href="{{ route('events.index') }}" class="btn btn-primary">Parcourir les événements</a>
+                <i class="fas fa-calendar-times fa-3x text-purple mb-3"></i>
+                <p class="mb-3">Vous n'êtes inscrit à aucun événement.</p>
+                <a href="{{ route('events.index') }}" class="btn btn-gradient">
+                    <i class="fas fa-compass me-2"></i> Parcourir les événements
+                </a>
             </div>
             @endforelse
         </div>
     </div>
 </div>
 
-<!-- Mon Compte -->
-<div class="content-card mb-5">
-    <div class="content-header">
-        <h5>Mon Compte</h5>
-    </div>
-    <div class="content-body">
-        <div class="row profile-section">
-            <div class="col-md-4 mb-4 mb-md-0">
-                <div class="profile-card">
-                    <div class="profile-avatar">
-                        <i class="fas fa-user"></i>
+<!-- Mon Compte & Notifications -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-user-circle text-purple me-2"></i>
+                <h5 class="card-title mb-0">Mon Compte</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="profile-img-wrapper mx-auto mb-3">
+                        <img src="{{ Auth::user()->profile_photo_url ?? asset('asset/img/default-avatar.png') }}" alt="{{ Auth::user()->name }}" class="profile-img">
                     </div>
-                    <h5>{{ Auth::user()->name }}</h5>
-                    <p>{{ Auth::user()->email }}</p>
-                    <a href="{{ route('profile') }}" class="btn btn-primary">
-                        <i class="fas fa-user-edit"></i> Modifier Profil
+                    <h5 class="mb-1">{{ Auth::user()->name }}</h5>
+                    <p class="text-muted">{{ Auth::user()->email }}</p>
+                </div>
+                <ul class="account-info">
+                    <li class="account-info-item">
+                        <div class="info-label">Nom complet:</div>
+                        <div class="info-value">{{ Auth::user()->name }}</div>
+                    </li>
+                    <li class="account-info-item">
+                        <div class="info-label">Email:</div>
+                        <div class="info-value">{{ Auth::user()->email }}</div>
+                    </li>
+                    <li class="account-info-item">
+                        <div class="info-label">Rôle:</div>
+                        <div class="info-value">{{ ucfirst(Auth::user()->role) }}</div>
+                    </li>
+                    <li class="account-info-item">
+                        <div class="info-label">Membre depuis:</div>
+                        <div class="info-value">{{ Auth::user()->created_at->format('d M Y') }}</div>
+                    </li>
+                </ul>
+                <div class="text-center mt-4">
+                    <a href="{{ route('participant.profile') }}" class="btn btn-outline-purple">
+                        <i class="fas fa-user-edit me-2"></i> Modifier le profil
                     </a>
                 </div>
             </div>
-            <div class="col-md-8">
-                <div class="profile-details">
-                    <h5>Informations personnelles</h5>
-                    <div class="info-list">
-                        <div class="info-item">
-                            <span class="info-label">Nom complet</span>
-                            <span class="info-value">{{ Auth::user()->name }}</span>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-bell text-purple me-2"></i>
+                <h5 class="card-title mb-0">Notifications récentes</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group notification-list">
+                    @forelse($notifications ?? [] as $notification)
+                    <div class="list-group-item notification-item {{ $notification->is_read ? '' : 'unread' }}">
+                        <div class="notification-icon">
+                            <i class="fas {{ $notification->icon ?? 'fa-bell' }} text-purple"></i>
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Email</span>
-                            <span class="info-value">{{ Auth::user()->email }}</span>
+                        <div class="notification-content">
+                            <p class="notification-text mb-1">{{ $notification->message }}</p>
+                            <small class="notification-time text-muted">{{ $notification->created_at->diffForHumans() }}</small>
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Rôle</span>
-                            <span class="info-value">{{ ucfirst(Auth::user()->role) }}</span>
+                        @if(!$notification->is_read)
+                        <div class="notification-actions">
+                            <form action="{{ route('participant.notifications.mark-as-read', $notification) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-light-purple">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Membre depuis</span>
-                            <span class="info-value">{{ Auth::user()->created_at->format('d/m/Y') }}</span>
-                        </div>
+                        @endif
                     </div>
-                    <div class="action-buttons">
-                        <a href="{{ route('profile') }}" class="btn btn-primary">
-                            <i class="fas fa-user-edit"></i> Modifier Informations
-                        </a>
-                        <a href="{{ route('profile') }}#password" class="btn btn-outline">
-                            <i class="fas fa-key"></i> Changer mot de passe
-                        </a>
+                    @empty
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash fa-3x text-purple mb-3"></i>
+                        <p class="mb-3">Aucune notification pour le moment.</p>
                     </div>
+                    @endforelse
                 </div>
+                
+                @if(!empty($notifications) && count($notifications) > 0)
+                <div class="notification-footer p-3 text-center">
+                    <a href="{{ route('participant.notifications') }}" class="btn btn-sm btn-outline-purple w-100">
+                        Voir toutes les notifications <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
-<!-- Notifications -->
-<div class="content-card mb-5" id="notifications">
-    <div class="content-header">
-        <h5>Notifications</h5>
+@if($calendarEvents ?? false) {{-- Only show calendar if events are passed --}}
+<div class="content-card card mt-4 mb-5">
+    <div class="card-header bg-transparent px-4 py-3">
+        <h5 class="mb-0 section-title-underline"><span>Mon Calendrier d'Événements</span></h5>
     </div>
-    <div class="content-body no-padding">
-        <div class="notifications-list">
-            @forelse($notifications ?? [] as $notification)
-            <div class="notification-item">
-                <div class="notification-icon notification-{{ $notification->type }}">
-                    <i class="fas fa-{{ 
-                        $notification->type == 'confirmation' ? 'check-circle' : 
-                        ($notification->type == 'reminder' ? 'clock' : 
-                        ($notification->type == 'cancellation' ? 'times-circle' : 'bell')) 
-                    }}"></i>
-                </div>
-                <div class="notification-content">
-                    <h6>{{ $notification->title }}</h6>
-                    <p>{{ $notification->message }}</p>
-                    <span class="notification-time">{{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}</span>
-                </div>
-                <div class="notification-action">
-                    <button class="btn-icon">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            @empty
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-bell-slash"></i>
-                </div>
-                <p>Vous n'avez pas de notifications</p>
-            </div>
-            @endforelse
-        </div>
+    <div class="card-body p-3 p-md-4">
+        <div id="calendar" style="min-height: 450px;"></div>
     </div>
 </div>
+@endif
+
 @endsection
 
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+@push('styles_before')
 <style>
-/* Modern Dashboard Styling */
-/* Statistics Cards */
-.stat-card {
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-    height: 100%;
-    position: relative;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-}
-
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
-    z-index: 1;
-}
-
-.stat-card-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.8rem;
-    position: relative;
-    z-index: 2;
-}
-
-.stat-primary {
-    background: linear-gradient(135deg, #6259ca 0%, #8a79fa 100%);
-    color: #fff;
-}
-
-.stat-success {
-    background: linear-gradient(135deg, #2dce89 0%, #4ad49b 100%);
-    color: #fff;
-}
-
-.stat-info {
-    background: linear-gradient(135deg, #11cdef 0%, #1ec6e6 100%);
-    color: #fff;
-}
-
-.stat-warning {
-    background: linear-gradient(135deg, #fb6340 0%, #fbb140 100%);
-    color: #fff;
-}
-
-.stat-content h6 {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    opacity: 0.9;
-}
-
-.stat-value {
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 0.75rem;
-}
-
-.stat-link, .stat-info {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    color: inherit;
-    text-decoration: none;
-    display: block;
-    margin-top: 0.25rem;
-}
-
-.stat-link i {
-    transition: transform 0.3s ease;
-    margin-left: 0.25rem;
-}
-
-.stat-link:hover i {
-    transform: translateX(3px);
-}
-
-.stat-icon {
-    font-size: 2.2rem;
-    opacity: 0.9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 60px;
-    width: 60px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 12px;
-    backdrop-filter: blur(5px);
-}
-
-/* Content Cards */
-.content-card {
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.content-card:hover {
-    box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,0.08);
-}
-
-.content-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-.content-header h5 {
-    font-weight: 600;
-    font-size: 1.25rem;
-    margin: 0;
-}
-
-.content-body {
-    padding: 1.5rem;
-}
-
-.content-body.no-padding {
-    padding: 0;
-}
-
-/* Button Styles */
-.btn-outline {
-    background: transparent;
-    border: 1px solid rgba(0,0,0,0.1);
-    color: #666;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.3s;
-}
-
-.btn-outline:hover {
-    background: rgba(0,0,0,0.05);
-    color: #444;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #6259ca 0%, #8a79fa 100%);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    padding: 0.5rem 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.3s;
-}
-
-.btn-primary:hover {
-    box-shadow: 0 5px 15px rgba(98, 89, 202, 0.4);
-    transform: translateY(-2px);
-}
-
-.btn-sm {
-    padding: 0.375rem 1rem;
-    font-size: 0.8125rem;
-}
-
-.btn-icon {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.05);
-    border: none;
-    color: #666;
-    transition: all 0.3s;
-}
-
-.btn-icon:hover {
-    background: rgba(0,0,0,0.1);
-    color: #444;
-}
-
-/* Events Grid */
-.events-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-}
-
-.event-card {
-    border-radius: 12px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.05);
-    transition: all 0.3s;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.event-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
-}
-
-.event-image {
-    position: relative;
-    height: 180px;
-    overflow: hidden;
-}
-
-.event-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.event-card:hover .event-image img {
-    transform: scale(1.05);
-}
-
-.placeholder-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f5f5f5;
-    color: #6259ca;
-    font-size: 2.5rem;
-}
-
-.event-badges {
-    position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    right: 0.75rem;
-    display: flex;
-    justify-content: space-between;
-    z-index: 1;
-}
-
-.badge {
-    padding: 0.35rem 0.75rem;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.badge-primary {
-    background: #6259ca;
-    color: #fff;
-}
-
-.badge-dark {
-    background: rgba(0,0,0,0.7);
-    color: #fff;
-}
-
-.status-confirmed {
-    background: #2dce89;
-    color: #fff;
-}
-
-.status-pending {
-    background: #fb6340;
-    color: #fff;
-}
-
-.payment-paid {
-    background: #2dce89;
-    color: #fff;
-}
-
-.payment-pending {
-    background: #fb6340;
-    color: #fff;
-}
-
-.event-details {
-    padding: 1.25rem;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.event-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-.event-info {
-    margin-bottom: 1rem;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    color: #666;
-}
-
-.info-item i {
-    color: #6259ca;
-    width: 18px;
-    margin-right: 0.5rem;
-}
-
-.event-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid rgba(0,0,0,0.05);
-}
-
-.event-price {
-    font-weight: 700;
-    color: #6259ca;
-    font-size: 1.125rem;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-}
-
-.empty-icon {
-    font-size: 3rem;
-    color: #ddd;
-    margin-bottom: 1rem;
-}
-
-/* Registration History */
-.registration-history {
-    display: flex;
-    flex-direction: column;
-}
-
-.registration-item {
-    display: flex;
-    padding: 1.25rem;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
-.registration-image {
-    width: 100px;
-    height: 80px;
-    min-width: 100px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-right: 1.25rem;
-}
-
-.registration-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.registration-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.registration-info h5 {
-    font-weight: 600;
-    font-size: 1.125rem;
-    margin-bottom: 0.5rem;
-}
-
-.info-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-bottom: 0.75rem;
-}
-
-.status-badges {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.registration-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-left: 1.25rem;
-    min-width: 140px;
-}
-
-/* Profile Section */
-.profile-section {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.profile-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-    background: linear-gradient(135deg, rgba(98, 89, 202, 0.03) 0%, rgba(98, 89, 202, 0.06) 100%);
-    border-radius: 12px;
-    box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.03);
-    height: 100%;
-}
-
-.profile-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6259ca 0%, #8a79fa 100%);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 5px 15px rgba(98, 89, 202, 0.4);
-}
-
-.profile-card h5 {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.profile-card p {
-    color: #666;
-    margin-bottom: 1.5rem;
-}
-
-.profile-details {
-    padding: 1.5rem;
-    background: linear-gradient(135deg, rgba(98, 89, 202, 0.02) 0%, rgba(98, 89, 202, 0.04) 100%);
-    border-radius: 12px;
-    height: 100%;
-    box-shadow: 0 0.25rem 1rem rgba(0,0,0,0.03);
-}
-
-.profile-details h5 {
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    position: relative;
-}
-
-.profile-details h5::after {
-    content: '';
-    position: absolute;
-    bottom: -0.5rem;
-    left: 0;
-    width: 50px;
-    height: 3px;
-    background: #6259ca;
-    border-radius: 3px;
-}
-
-.info-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.info-list .info-item {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-}
-
-.info-label {
-    font-size: 0.875rem;
-    color: #777;
-    margin-bottom: 0.25rem;
-}
-
-.info-value {
-    font-weight: 600;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-/* Notifications List */
-.notifications-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.notification-item {
-    display: flex;
-    align-items: flex-start;
-    padding: 1.25rem;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    transition: background-color 0.2s;
-}
-
-.notification-item:hover {
-    background-color: rgba(0,0,0,0.01);
-}
-
-.notification-icon {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-}
-
-.notification-confirmation {
-    background: rgba(45, 206, 137, 0.1);
-    color: #2dce89;
-}
-
-.notification-reminder {
-    background: rgba(251, 99, 64, 0.1);
-    color: #fb6340;
-}
-
-.notification-cancellation {
-    background: rgba(245, 54, 92, 0.1);
-    color: #f5365c;
-}
-
-.notification-info {
-    background: rgba(17, 205, 239, 0.1);
-    color: #11cdef;
-}
-
-.notification-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.notification-content h6 {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.notification-content p {
-    color: #666;
-    margin-bottom: 0.25rem;
-    font-size: 0.9375rem;
-}
-
-.notification-time {
-    font-size: 0.8125rem;
-    color: #999;
-}
-
-.notification-action {
-    margin-left: 1rem;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.stat-card, .content-card, .event-card, .registration-item, .notification-item {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-
-.dashboard-stats .stat-card:nth-child(1) { animation-delay: 0.1s; }
-.dashboard-stats .stat-card:nth-child(2) { animation-delay: 0.2s; }
-.dashboard-stats .stat-card:nth-child(3) { animation-delay: 0.3s; }
-.dashboard-stats .stat-card:nth-child(4) { animation-delay: 0.4s; }
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-    .events-grid {
-        grid-template-columns: 1fr;
+    /* Minimal styles for feather icons */
+    .feather-xs {
+        width: 0.8rem;
+        height: 0.8rem;
+        vertical-align: middle;
+    }
+    
+    /* Dark theme styles for FullCalendar */
+    .fc-theme-standard .fc-scrollgrid {
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .fc-theme-standard td, .fc-theme-standard th {
+        border-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .fc-theme-standard .fc-list-day-cushion {
+        background-color: rgba(30, 41, 59, 0.6);
+    }
+    
+    .fc-theme-standard .fc-list-event:hover td {
+        background-color: rgba(107, 70, 193, 0.1);
+    }
+    
+    .fc .fc-button-primary {
+        background-color: #6B46C1;
+        border-color: #6B46C1;
+    }
+    
+    .fc .fc-button-primary:hover {
+        background-color: #5A32AB;
+        border-color: #5A32AB;
+    }
+    
+    .fc .fc-daygrid-day.fc-day-today {
+        background-color: rgba(107, 70, 193, 0.1);
+    }
+</style>
+@endpush
+
+@push('styles')
+<style>
+    /* Stat Cards */
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    .bg-purple-soft {
+        background-color: rgba(107, 70, 193, 0.15) !important;
+    }
+    
+    .text-purple {
+        color: #6B46C1 !important;
+    }
+    
+    .bg-purple {
+        background-color: #6B46C1 !important;
+    }
+    
+    .progress-sm {
+        height: 4px;
+        border-radius: 2px;
+    }
+    
+    .bg-dark-soft {
+        background-color: rgba(30, 41, 59, 0.6) !important;
+    }
+    
+    /* Event Cards */
+    .event-card {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+        overflow: hidden;
+    }
+    
+    .event-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 35px rgba(107, 70, 193, 0.25);
+        border-color: rgba(107, 70, 193, 0.3);
+    }
+    
+    .event-image {
+        position: relative;
+        height: 180px;
+        overflow: hidden;
+    }
+    
+    .event-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .event-card:hover .event-img {
+        transform: scale(1.1);
+    }
+    
+    .event-img-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(30, 41, 59, 0.8);
+        color: #94A3B8;
+        font-size: 3rem;
+    }
+    
+    .event-badges {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 5px;
+    }
+    
+    .event-content {
+        padding: 1.25rem;
+    }
+    
+    .event-title {
+        margin-bottom: 1rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .event-info {
+        margin-bottom: 1.25rem;
+    }
+    
+    .event-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        color: #94A3B8;
+        font-size: 0.9rem;
+    }
+    
+    .event-info-item i {
+        width: 18px;
+        margin-right: 0.5rem;
+    }
+    
+    .event-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding-top: 1rem;
+    }
+    
+    .event-price {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #6B46C1;
+    }
+    
+    .btn-outline-purple {
+        color: #6B46C1;
+        border-color: #6B46C1;
+        background-color: transparent;
+    }
+    
+    .btn-outline-purple:hover {
+        color: #fff;
+        background-color: #6B46C1;
+        border-color: #6B46C1;
+    }
+    
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 3rem;
+        background-color: rgba(30, 41, 59, 0.3);
+        border-radius: 1rem;
+    }
+
+    /* Registration Items */
+    .registration-list {
+        border-radius: 0 0 1rem 1rem;
+        overflow: hidden;
     }
     
     .registration-item {
-        flex-direction: column;
+        padding: 1rem 1.5rem;
+        background-color: transparent;
+        border-color: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .registration-item:hover {
+        background-color: rgba(30, 41, 59, 0.3);
     }
     
     .registration-image {
-        margin-right: 0;
-        margin-bottom: 1rem;
+        width: 80px;
+        height: 60px;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .registration-image img {
         width: 100%;
-        height: 120px;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .registration-img-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(30, 41, 59, 0.8);
+        color: #94A3B8;
+        font-size: 1.5rem;
+    }
+    
+    .registration-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .registration-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+    
+    .meta-item i {
+        margin-right: 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .registration-status {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
     }
     
     .registration-actions {
-        margin-left: 0;
-        margin-top: 1rem;
-        flex-direction: row;
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    /* Account Info */
+    .profile-img-wrapper {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        padding: 3px;
+        background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+    }
+    
+    .profile-img {
         width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid var(--primary-light);
     }
     
-    .registration-actions .btn {
-        flex: 1;
+    .account-info {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem;
     }
     
-    .action-buttons {
-        flex-direction: column;
+    .account-info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
     }
     
-    .action-buttons .btn {
-        width: 100%;
+    .account-info-item:last-child {
+        border-bottom: none;
     }
-}
+    
+    .info-label {
+        color: var(--text-muted);
+    }
+    
+    .info-value {
+        font-weight: 500;
+    }
+    
+    /* Notifications */
+    .notifications-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .notification-item {
+        display: flex;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+    
+    .notification-item:hover {
+        background-color: rgba(30, 41, 59, 0.3);
+    }
+    
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin-right: 1rem;
+    }
+    
+    .notification-content {
+        flex-grow: 1;
+    }
+    
+    .notification-title {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        font-size: 1rem;
+    }
+    
+    .notification-message {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .notification-meta {
+        display: flex;
+        align-items: center;
+    }
+    
+    .notification-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+    
+    .notification-actions {
+        margin-left: 1rem;
+    }
+    
+    @media (max-width: 767.98px) {
+        .registration-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .registration-actions {
+            margin-top: 1rem;
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .registration-actions .btn {
+            width: 100%;
+        }
+        
+        .notification-item {
+            flex-direction: column;
+        }
+        
+        .notification-icon {
+            margin-bottom: 1rem;
+            margin-right: 0;
+        }
+        
+        .notification-actions {
+            margin-top: 1rem;
+            margin-left: 0;
+            align-self: flex-end;
+        }
+    }
 </style>
+@endpush
+
+@push('scripts_footer')
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
         
-        // Add animations to elements when they come into view
-        const animateOnScroll = function() {
-            const elements = document.querySelectorAll('.stat-card, .content-card, .event-card, .registration-item, .notification-item');
-            elements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
-                if (rect.top <= viewHeight && rect.bottom >= 0) {
-                    el.style.visibility = 'visible';
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }
-            });
-        };
-        
-        window.addEventListener('scroll', animateOnScroll);
-        animateOnScroll(); // Trigger once on load
-        
-        // Sample event data - would come from the backend in a real application
-        const events = [
-            @foreach($calendarEvents ?? [] as $event)
-            {
-                title: '{{ $event->title }}',
-                start: '{{ $event->date->format('Y-m-d') }}T{{ $event->time }}',
-                url: '{{ route('events.show', $event) }}',
-                backgroundColor: '{{ $event->status == 'confirmed' ? '#6259ca' : '#fb6340' }}'
-            },
-            @endforeach
-        ];
-        
-        if (calendarEl) {
+        @if($calendarEvents ?? false)
+        if (calendarEl) { 
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 headerToolbar: {
@@ -892,20 +757,41 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,listWeek'
                 },
-                events: events,
+                events: [
+                    @foreach($calendarEvents ?? [] as $event)
+                    {
+                        title: '{{ addslashes($event->title) }}',
+                        start: '{{ $event->date->format('Y-m-d') . (isset($event->time) ? "T" . $event->time : "") }}',
+                        url: '{{ route('events.show', $event) }}',
+                        backgroundColor: '{{ $event->status == "confirmed" ? "#6B46C1" : ($event->status == "cancelled" ? "#DC2626" : "#F59E0B") }}',
+                        borderColor: '{{ $event->status == "confirmed" ? "#6B46C1" : ($event->status == "cancelled" ? "#DC2626" : "#F59E0B") }}',
+                        textColor: '#fff'
+                    },
+                    @endforeach
+                ],
                 eventClick: function(info) {
                     if (info.event.url) {
                         window.location.href = info.event.url;
-                        return false;
+                        info.jsEvent.preventDefault(); 
                     }
                 },
                 height: 'auto',
                 themeSystem: 'bootstrap5',
-                dayMaxEvents: true
+                dayMaxEvents: true, 
+                buttonText: {
+                    today: 'Today',
+                    month: 'Month',
+                    week:  'Week',
+                    list:  'List'
+                }
             });
-            
             calendar.render();
+        }
+        @endif
+
+        if (typeof feather !== 'undefined') {
+            feather.replace();
         }
     });
 </script>
-@endsection 
+@endpush 

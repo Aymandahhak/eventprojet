@@ -965,4 +965,234 @@
     }
 }
 
+/*** Dark Theme Start ***/
+
+/* Dark Theme Variables */
+:root {
+    --primary-dark: #0A0F1F;
+    --primary-medium: #131B30;
+    --primary-light: #12182B;
+    --card-bg: rgba(28, 34, 58, 0.6);
+    --border-color: rgba(52, 67, 106, 0.3);
+    --accent-start: #6C5B7B;
+    --accent-start-rgb: 108;
+    --accent-start-rgb-g: 91;
+    --accent-start-rgb-b: 123;
+    --accent-end: #C06C84;
+    --text-white: #fff;
+    --text-light: #E0E0E0;
+    --text-muted: #A0AEC0;
+    
+    /* Soft background colors for badges */
+    --bg-primary-soft: rgba(13, 110, 253, 0.1);
+    --bg-success-soft: rgba(25, 135, 84, 0.1);
+    --bg-info-soft: rgba(13, 202, 240, 0.1);
+    --bg-warning-soft: rgba(255, 193, 7, 0.1);
+    --bg-danger-soft: rgba(220, 53, 69, 0.1);
+    --bg-secondary-soft: rgba(173, 181, 189, 0.1);
+}
+
+/* Dark Theme Layout & Components */
+.dark-theme {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 100%);
+    color: var(--text-light);
+}
+
+.dark-theme .navbar, 
+.dark-theme .sidebar,
+.dark-theme .dropdown-menu,
+.dark-theme .modal-content {
+    background-color: var(--primary-light);
+    border-color: var(--border-color);
+}
+
+.dark-theme .dropdown-item {
+    color: var(--text-muted);
+}
+
+.dark-theme .dropdown-item:hover, 
+.dark-theme .dropdown-item:focus {
+    color: var(--text-light);
+    background-color: rgba(var(--accent-start-rgb), var(--accent-start-rgb-g), var(--accent-start-rgb-b), 0.2);
+}
+
+.dark-theme .dropdown-divider,
+.dark-theme .modal-header,
+.dark-theme .modal-footer {
+    border-color: var(--border-color);
+}
+
+/* Dark Theme Cards & Lists */
+.dark-theme .card,
+.dark-theme .list-group-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    backdrop-filter: blur(5px);
+}
+
+.dark-theme .card-header,
+.dark-theme .card-footer {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: var(--border-color);
+}
+
+.dark-theme .list-group-item {
+    color: var(--text-light);
+}
+
+.dark-theme .list-group-item-action:hover {
+    background-color: rgba(var(--accent-start-rgb), var(--accent-start-rgb-g), var(--accent-start-rgb-b), 0.1);
+}
+
+.dark-theme .border-bottom-dashed {
+    border-bottom: 1px dashed var(--border-color) !important;
+}
+
+/* Dark Theme Forms & Inputs */
+.dark-theme .form-control,
+.dark-theme .form-select,
+.dark-theme .input-group-text {
+    background-color: rgba(18, 24, 43, 0.8);
+    border-color: var(--border-color);
+    color: var(--text-light);
+}
+
+.dark-theme .form-control:focus,
+.dark-theme .form-select:focus {
+    background-color: rgba(18, 24, 43, 0.9);
+    border-color: var(--accent-start);
+    box-shadow: 0 0 0 0.25rem rgba(var(--accent-start-rgb), var(--accent-start-rgb-g), var(--accent-start-rgb-b), 0.25);
+}
+
+.dark-theme .form-control::placeholder {
+    color: rgba(160, 174, 192, 0.6);
+}
+
+/* Dark Theme Badges & Icons */
+.dark-theme .badge {
+    border: none;
+}
+
+.dark-theme .badge.bg-primary-soft {
+    background-color: var(--bg-primary-soft) !important;
+    color: var(--bs-primary) !important;
+}
+
+.dark-theme .badge.bg-success-soft {
+    background-color: var(--bg-success-soft) !important;
+    color: var(--bs-success) !important;
+}
+
+.dark-theme .badge.bg-info-soft {
+    background-color: var(--bg-info-soft) !important;
+    color: var(--bs-info) !important;
+}
+
+.dark-theme .badge.bg-warning-soft {
+    background-color: var(--bg-warning-soft) !important;
+    color: var(--bs-warning) !important;
+}
+
+.dark-theme .badge.bg-danger-soft {
+    background-color: var(--bg-danger-soft) !important;
+    color: var(--bs-danger) !important;
+}
+
+.dark-theme .badge.bg-secondary-soft {
+    background-color: var(--bg-secondary-soft) !important;
+    color: var(--bs-secondary) !important;
+}
+
+/* Icon containers and wrappers */
+.dark-theme .stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dark Theme Utilities */
+.dark-theme .text-muted {
+    color: var(--text-muted) !important;
+}
+
+.dark-theme .border,
+.dark-theme .border-top,
+.dark-theme .border-bottom,
+.dark-theme .border-start,
+.dark-theme .border-end {
+    border-color: var(--border-color) !important;
+}
+
+.dark-theme .shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.25) !important;
+}
+
+.dark-theme .bg-light {
+    background-color: rgba(var(--accent-start-rgb), var(--accent-start-rgb-g), var(--accent-start-rgb-b), 0.05) !important;
+}
+
+.dark-theme .section-title-underline span {
+    display: inline-block;
+    padding-bottom: 0.3rem;
+    border-bottom: 3px solid var(--accent-start);
+}
+
+/* FullCalendar Dark Theme */
+.dark-theme .fc-theme-standard .fc-scrollgrid,
+.dark-theme .fc-theme-standard td,
+.dark-theme .fc-theme-standard th {
+    border-color: var(--border-color) !important;
+}
+
+.dark-theme .fc-theme-standard .fc-scrollgrid {
+    background-color: var(--card-bg);
+}
+
+.dark-theme .fc-col-header-cell-cushion,
+.dark-theme .fc-daygrid-day-number {
+    color: var(--text-light);
+}
+
+.dark-theme .fc-button-primary {
+    background-color: var(--accent-start) !important;
+    border-color: var(--accent-start) !important;
+    color: var(--text-white) !important;
+}
+
+.dark-theme .fc-button-primary:hover {
+    background-color: var(--accent-end) !important;
+    border-color: var(--accent-end) !important;
+}
+
+.dark-theme .fc-toolbar-title {
+    color: var(--text-light);
+}
+
+.dark-theme .fc-daygrid-day.fc-day-today {
+    background-color: rgba(var(--accent-start-rgb), var(--accent-start-rgb-g), var(--accent-start-rgb-b), 0.1) !important;
+}
+
+/* Auth Pages in Dark Theme */
+.dark-theme .auth-wrapper {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-medium) 100%);
+}
+
+.dark-theme .auth-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+}
+
+.dark-theme .auth-logo {
+    color: var(--text-white);
+}
+
+.dark-theme .auth-title {
+    color: var(--text-light);
+}
+
+/*** Dark Theme End ***/
+
 
